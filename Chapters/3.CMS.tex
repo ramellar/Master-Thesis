@@ -1,0 +1,18 @@
+\section{CMS (LHC?)}
+
+\subsection{Tracker}
+\subsection{Electromagnetic calorimeter (ECAL)}
+\subsection{Hadronic Calorimeter (HCAL)}
+\subsection{Solenoid}
+\subsection{Muon detector}
+\subsection{Triggers}
+\subsection{Event recontsruction}
+\subsubsection{Primary Vertex}
+\subsubsection{Pile-up}
+\subsubsection{Jet reconstruction}
+\subsubsection{Missing Energy}
+\subsubsection{B-tagging} \label{Btagging}
+\subsubsection{pt reg} \label{subsubsec: btag-ptreg}
+The \pt regressed is the one computed using a DNN. The main idea is that, we train a DNN with information from the reco jets and we try to retrieve the original energy if these jets. For efficiency purposes this DNNN gives out the ratio of the predicted E/ original E. To improve the analysis, we use \pt reg, which means that we multiply the \pt measured by the detector times this ratio, which allows us ti have a more precise value of thee \pt of the objects we are using.
+\subsection{Monte-Carlo}
+\subsubsection{Gen/Reco jets}

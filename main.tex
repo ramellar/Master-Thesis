@@ -1,0 +1,113 @@
+\documentclass[11pt]{article}
+\usepackage{graphicx} % Required for inserting images
+\usepackage[letterpaper,top=3cm,bottom=3cm,left=3cm,right=3cm,marginparwidth=1.75cm]{geometry}
+
+% Useful packages
+\usepackage{amsmath}
+\usepackage{array}
+\usepackage[notrig]{physics}
+\usepackage{amssymb}
+\usepackage[colorlinks=true]{hyperref}
+\usepackage[T1]{fontenc}
+\usepackage[dvipsnames]{xcolor}
+%\date{March 2023}
+\usepackage[style=numeric,sorting=none]{biblatex}
+\addbibresource{sample.bib}
+\usepackage{graphicx,caption}
+\usepackage{xspace}
+\usepackage{subcaption}
+\usepackage{mathtools}
+\usepackage{textalpha}
+\usepackage{titlesec}
+\usepackage{fancyhdr}
+\usepackage{enumitem}
+\usepackage{float}
+\usepackage{indentfirst}
+\usepackage{ragged2e}
+
+\setcounter{secnumdepth}{4}
+
+\titleformat{\paragraph}
+{\normalfont\normalsize\bfseries}{\theparagraph}{1em}{}
+\titlespacing*{\paragraph}
+{0pt}{3.25ex plus 1ex minus .2ex}{1.5ex plus .2ex}
+
+\input{particle_def}
+
+\begin{document}
+
+%\nocite{*}
+\begin{titlepage}
+\newcommand{\HRule}{\rule{\linewidth}{0.5mm}}
+\begin{figure}[H]
+\noindent
+\begin{minipage}{.5\textwidth}
+\begin{flushleft}
+    \includegraphics[scale=0.15]{Logos/Unknown.png}
+\end{flushleft}
+\end{minipage}
+\begin{minipage}{.5\textwidth}
+\begin{flushright}
+\includegraphics[scale=0.2]{Logos/logo_hep_centre_texte_coupe.png}
+\end{flushright}
+\end{minipage}
+
+\end{figure}
+\center
+\HRule \\[0.4cm]
+{ \huge \bfseries  Improving the reconstructed 4b signal final state pairing efficiency to Higgs boson candidate in the HH to 4b analysis at CMS
+ \\[0.15cm] }
+ \HRule \\[0.5cm]
+ \center 
+\textsc{\LARGE\textbf{Master Thesis}}\\[1cm]
+{\Large ETH Zurich}\\[0.5cm]
+{\Large CMS}\\[1cm]
+
+{\large\textbf{Supervisor: Alessandro Calandri, Mauro Donegà}}\\[1cm]
+Author: Ruth AMELLA RANZ\\
+M2 High Energy Physics
+\\[1cm]
+\textbf{Abstract}\\[1cm]
+\justifying
+Write something
+
+
+\end{titlepage}
+
+\newpage
+\pagenumbering{gobble}
+\tableofcontents
+\pagenumbering{arabic}
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{\rightmark}
+\fancyfoot[C]{\thepage}
+\setlength{\headheight}{13.59999pt}
+\addtolength{\topmargin}{-1.59999pt}
+\setlength{\headheight}{25.22153pt}
+\addtolength{\topmargin}{-11.62154pt}
+
+\newpage
+
+\include{Chapters/1.Introduction}
+
+\include{Chapters/2.SM}
+
+\include{Chapters/3.CMS}
+
+\include{Chapters/4.HH4b_Analysis}
+
+\include{Chapters/5.SPANet}
+
+\include{Chapters/6.Improving_the_pairing_efficiency}
+
+\include{Chapters/7.S_B_classification}
+
+\section*{Acknowledgements}
+Questions
+\begin{itemize}
+    \item What is pt reg
+    \item more on the Montecarlo 
+\end{itemize}
+
+\end{document}
