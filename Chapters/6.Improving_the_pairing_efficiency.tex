@@ -307,9 +307,40 @@ We will stick to this configuration for our model in the following sections. As 
 
 
 \subsection{Grid search}
-To increase the pairing efficiency, we performed a grid search in order to tune some of the parameters. To do so, we used the features of the Stable model and changed the hyperparameters presented in Table . To obtain the values showed in this table, we start by specifying a range of possible values for our hyperparameters. From these values we perform several tests combining them differently. The final output will be the combination of hyperparameters that give the best performance.
-
+To increase the pairing efficiency, we performed a grid search in order to tune some of the parameters. 
+To do so, we used the features of the Stable model and changed the hyperparameters presented in Table \ref{table: parameters for the grid search}. 
 However, contrary to what is specified in Table \ref{table: stable model} for this grid search we will use 50 epochs given the limited resources at our disposal.
+As can be seen in Table \ref{table: parameters for the grid search}, we give different possible values for the hyperparameters and then we perform several tests combining them differently.
+In particular for the first 3, we need to choose between the ones specifies, whereas for the L2 Penalty we can continually (in log scale) choose a value between [1e-5 : 1e-3].
+The final output of this search will be the combination of hyperparameters that give the best performance which are shown in Table \ref{table: grid search}.
+
+
+\begin{table}[hbt]
+   \centering
+   \begin{tabular}{|c|c|}
+    \hline
+    Hidden dimension  &  \{32, 64, 96\}  \\
+    \hline
+   Number of encoder layers & \{5, 6, 7, 8\} \\
+    \hline
+    Number of branch embedding layers &  \{1, 2, 3, 4\}\\
+    \hline
+     Number of branch encoder layers & 4\\
+    \hline
+    Number of regression layers & 3 \\
+    \hline
+    Number of classification layers & 1 \\
+    \hline
+    Focal gamma & 0.0 \\
+    \hline
+    L2 Penalty & [1e-5 : 1e-3] \\
+    \hline
+   \end{tabular}
+   \caption{Final hyperparameters determined by the grid search}
+   \label{table: parameters for the grid search}
+   \end{table}
+
+
 
 \begin{table}[hbt]
 \centering
@@ -333,10 +364,13 @@ Number of encoder layers & 5 \\
  \hline
 \end{tabular}
 \caption{Final hyperparameters determined by the grid search}
-\label{table: gris search}
+\label{table: grid search}
 \end{table}
 
-By using these new hyperparameters our model has 5.1 M trainable parameters compared to 0.5 M in the Stable model. As can be seen in Figure \textbf{bla}, by using this new hyperparameters, with which we have a much larger model, we don't increase that much the performance compared to the Stable model performance. Hence, we decided to use the hyperparameters from the Stable Model. (takes longer)
+By using these new hyperparameters our model has 5.1 M trainable parameters compared to 0.5 M in the Stable model. 
+As can be seen in Figure \textbf{bla}, by using this new hyperparameters, with which we have a much larger model, 
+we don't increase that much the performance compared to the Stable model performance. 
+Hence, we decided to use the hyperparameters from the Stable Model. (takes longer)
 
 %Do i mention other traiinngs done by Mathieu?
 
@@ -344,15 +378,22 @@ By using these new hyperparameters our model has 5.1 M trainable parameters comp
 
 \subsection{Introducing the kl}
 
-As explained in section \ref{section: HH4b}, by measuring the di-Higgs production we are aiming to study the Higgs boson self coupling parameter $\lambda$. To do so, by measuring the cross-section of the di-Higgs production, we can obtain information about the parameter lambda $\lambda$ as we can parameterize it in terms of anomalous Higgs boson couplings $\kappa_\lambda$, where $\kappa_\lambda$ is defined as follows:
+As explained in section \ref{section: HH4b}, by measuring the di-Higgs production we are aiming to study 
+the Higgs boson self coupling parameter $\lambda$. To do so, by measuring the cross-section of the di-Higgs production, 
+we can obtain information about the parameter lambda $\lambda$ as we can parameterize it in terms of anomalous Higgs
+boson couplings $\kappa_\lambda$, where $\kappa_\lambda$ is defined as follows:
 
 \begin{equation}
     \kappa_\lambda=\frac{\lambda_{HHH}}{\lambda^{SM}_{HHH}}
 \end{equation}
 
-As can be seen in Figure \textbf{bla}, for different $\kappa_\lambda$ the kinematics of our process change, therefore it is important to train SPANet accordingly. To do so, we will use multiple signal samples with different values of $\kappa_\lambda \in \{-2.0, -1.0, 0.0, 0.5, 1.0, 1.5, 2.0, 2.45, 3.0, 3.5, 4.0, 5.0\}$
+As can be seen in Figure \textbf{bla}, for different $\kappa_\lambda$ the kinematics 
+of our process change, therefore it is important to train SPANet accordingly. 
+To do so, we will use multiple signal samples with different values of $\kappa_\lambda 
+\in \{-2.0, -1.0, 0.0, 0.5, 1.0, 1.5, 2.0, 2.45, 3.0, 3.5, 4.0, 5.0\}$
 
-Present the kl efficiencies of the first trainings just evaluated on the diffrent kl (slide 9- $2024_04_18-HH4b-SPANet_pairing$)
+Present the kl efficiencies of the first trainings just evaluated on the diffrent 
+kl (slide 9- $2024_04_18-HH4b-SPANet_pairing$)
 
 Presen the trainings using kl (sl 11/12)
 
