@@ -4,7 +4,7 @@
 \subsection{Choice of the optimal inputs for the training}
 As mentioned in section \ref{section: spanet architecture} we can give SPANet global and sequential inputs for the training. The sequential inputs being the ones that can have an arbitrary number of vectors per event, they will correspond to the information of the jets used for the pairing. On the other hand, the global vectors are the ones that will have a single vector per event, so they correspond to event level information.
 
-In order to find the optimal training that maximizes our pairing efficiency, we started by testing different configurations. As precised before, we want 4 jets in the final state, nevertheless due for instance to QCD processes even if in an event there is di-Higgs production decaying into 4 b quarks, we can have more than 4 jets in the final state. Hence, we want to start by checking how much do we gain in signal efficiency by considering other jets in the final state with lower b-tag score for the pairing. This can be seen in table \ref{table:signal_efficiency}. We first present the percentage of signal where the $k^{th}$ jet was matched, meaning that this $k^{th}$ jet was matched to one of the gen jets. We also show the percentage of signal of fully matched events, meaning the events for which 4 jets are matched to the 4 gen jets. Out of the total number of events 92.9\% are fully matched and the percentage of fully matched events when considering the first 4 leading jets is 90.2\%. According to table \ref{table:signal_efficiency}, we can see that most of the remaining signal efficiency is gained by considering a fifth jet for the paring (we gain 2.5\% out of 2.7\%). 
+In order to find the optimal training that maximizes our pairing efficiency, we started by testing different configurations. As precised before, we want 4 jets in the final state, nevertheless due for instance to QCD processes even if in an event there is di-Higgs production decaying into 4 b quarks, we can have more than 4 jets in the final state. Hence, we want to start by checking how much do we gain in signal efficiency by considering other jets in the final state with lower b-tag score for the pairing. This can be seen in Table \ref{table:signal_efficiency}. We first present the percentage of signal where the $k^{th}$ jet was matched, meaning that this $k^{th}$ jet was matched to one of the gen jets. We also show the percentage of signal of fully matched events, meaning the events for which 4 jets are matched to the 4 gen jets. Out of the total number of events 92.9\% are fully matched and the percentage of fully matched events when considering the first 4 leading jets is 90.2\%. According to Table \ref{table:signal_efficiency}, we can see that most of the remaining signal efficiency is gained by considering a fifth jet for the paring (we gain 2.5\% out of 2.7\%). 
 
 From these results, we conclude that the highest signal efficiency is obtained by considering either 4 or 5 jets for the pairing. Therefore, we will train SPANet using 4 and 5 jets as sequential inputs. We will also make one test considering 6 jets as sequential inputs, nevertheless this did not increase our performance, hence the choice of stopping at 5 jets for the pairing.
 
@@ -15,7 +15,7 @@ From these results, we conclude that the highest signal efficiency is obtained b
  \hline
  k  & Percentage of the signal with the $k^{th}$ jets matched & Percentage of signal fully matched events with the $k^{th}$ jet matched\\
  \hline
- 4 &  ? & 90.2\\
+ 4 &  94.4 & 90.2\\
  5 & 2.76 & 2.52 \\
  6 & 0.27 & 0.25 \\
  $\geq$7 &  $\approx$0.03 &  $\approx$0.02 \\
@@ -53,7 +53,7 @@ This is why in table \ref{table: First comparison} we summarize these first resu
     \item $\phi$
     \item b-tag
  \end{itemize} 
- as kinemtic information & 0.984 & 0.901 & 0.887 \\
+ as kinematic information & 0.984 & 0.901 & 0.887 \\
  \hline
  4 jets 5 global & \raggedright 4 jets considered for the pairing and a 5$^{\text{th}}$ given as global information. We use \begin{itemize}[itemsep=0.01em]
     \item \pt
@@ -212,9 +212,33 @@ In Tables \ref{table:5 jets trainings} and  \ref{table:4 jets trainings}, we sho
 \label{table:4 jets trainings}
 \end{table}
 
-From Tables  \ref{table:5 jets trainings} and  \ref{table:4 jets trainings}, we can see that for both either 5 jets or 4 jets 5 global, the best performance is obtained by using \pt reg and the Lite model. However here we only compare the total pairing efficiencies inclusively, but it is also possible to plot them differential as a function of $m_{HH}$, as can bee seen in Figures \textbf{bla, bla}. In Figure \textbf{bka} we can see that using different configurations for 4 jets and 5th global does not make impact much our total pairing efficiency. On the contrary, in Figure wee can see how much difference it makes to change the configuration of the training.
+From Tables  \ref{table:5 jets trainings} and  \ref{table:4 jets trainings}, we can see that for both either 5 jets or 4 jets 5 global, the best performance is obtained by using \pt reg and the Lite model. However here we only compare the total pairing efficiencies inclusively, but it is also possible to plot them differential as a function of $m_{HH}$, as can bee seen in Figures \ref{fig: comp 4j5g} and \ref{fig: comp 5j}. In Figure \ref{fig: comp 4j5g} we can see that using different configurations for 4 jets and 5th global does not make impact much our total pairing efficiency. On the contrary, in Figure \ref{fig: comp 5j} we can see how much difference it makes to change the configuration of the training.
 
-The next step is to compare these two models to the performance of the $D_{HH}$-method presented in section \ref{section: HH4b}. The comparison is done for events for which we have $\Delta D_{HH} > 30$ GeV, as we only could implement this method for these events. In Figure \textbf{bla} we show how these 2 models outperform the $D_{HH}$-method. 
+
+\begin{figure} [h!]
+    \centering
+    \includegraphics[width=0.6\linewidth]{Images/6.Improving/Imput Comparisons/4j5g training comp.png}
+    \caption{Comparison of different trainings using 4 jets and a 5$^\text{th}$ global as input}
+    \label{fig: comp 4j5g}
+\end{figure}
+
+\begin{figure}[h!]
+    \centering
+    \includegraphics[width=0.6\linewidth]{Images/6.Improving/Imput Comparisons/5j training comp.png}
+    \caption{Comparison of different trainings using 5 jets as inputs}
+    \label{fig: comp 5j}
+\end{figure}
+
+
+
+The next step is to compare these two models to the performance of the $D_{HH}$-method presented in section \ref{section: HH4b}. The comparison is done for events for which we have $\Delta D_{HH} > 30$ GeV, as we only could implement this method for these events. In Figure \ref{fig: 2 best models comp} we show how these 2 models outperform the $D_{HH}$-method. 
+
+\begin{figure}[h!]
+    \centering
+    \includegraphics[width=0.6\linewidth]{Images/6.Improving/Imput Comparisons/2 best models comp run2 .png}
+    \caption{Comparison of our two best performing models to the $D_{HH}$-method}
+    \label{fig: 2 best models comp}
+\end{figure}
 
 \vspace{0.2cm}
 
@@ -231,17 +255,57 @@ We also tried to asses the performance of these trainings evaluated on datasets 
 
 Even though the training using 5 jets as inputs outperforms the training using 4 jets with a 5$^{\text{th}}$ global, as a next figure of merit to choose our optimal model, it is important to verify if when applying our model in data, we observe background mass sculpting.
 
-\newpage
+\clearpage
 
 \subsection{Background mass sculpting}
 In addition to the pairing efficiency, another figure of merit we use in order to select the best model is the mass sculpting of the background. This is a very important feature as if we evaluate our model in a sample with mostly background events, we should not observe a fake peak of events around the signal region. 
 
-To verify this, we will use the models we presented in the last section and evaluate them in a sample of 2b data. This dataset contains data collected in 2022 during the Run 3, and as explained in section \ref{subsection:cutflows} due to the requirements of the 2b region, we have mostly background events and the signal contribution due to mistagging of the jets is negligible. Hence, if we evaluate our model here, we should not observe a peak of events in the $m_{HH}$ plane around the signal region (defined in section \ref{section: HH4b}). Indeed, in Figure \textbf{bla}, we show the 2D mass distribution of the evaluation of our model on signal events. We can see that most of the predicted events are in the signal region, as we would expect. Contrary, in Figure \textbf{bla}, we show the 2D mass distribution of the evaluation of our model on 2b data. We can see that there is not a peak of events in the signal region, which is indeed what we expected. 
+To verify this, we will use the models we presented in the last section and evaluate them in a sample of 2b data. This dataset contains data collected in 2022 during the Run 3, and as explained in section \ref{subsection:cutflows} due to the requirements of the 2b region, we have mostly background events and the signal contribution due to mistagging of the jets is negligible. Hence, if we evaluate our model here, we should not observe a peak of events in the $m_{HH}$ plane around the signal region (defined in section \ref{section: HH4b}). Indeed, in Figure \ref{fig: 2D mass dist sig}, we show the 2D mass distribution of the evaluation of our model on signal events. We can see that most of the predicted events are in the signal region, as we would expect. Contrary, in Figures \ref{fig: 2D mass sculpting for 4j5g} and \ref{fig: 2D mass sculpting for 5j}, we show the 2D mass distribution of the evaluation of our best models on 2b data. We can see that there is not a peak of events in the signal region, which is indeed what we expected. 
+
+\begin{figure}[hbt]
+    \centering
+    \includegraphics[width=0.6\linewidth]{Images/6.Improving/Mass sculpting/signal mhh.png}
+    \caption{2D mass distribution of the evaluation of our model on signal events}
+    \label{fig: 2D mass dist sig}
+\end{figure}
 
 
-For more clarity, we can compare these distributions in the 1D plane. These are shown in Figures \textbf{bla bla} for the leading and the subleading Higgs respectively. In these plots we can compare the two models more accurately and conclude that there is less sculpting when considering the training with 5 jets, for both the leading and the subleading Higgs. Therefore, the model where we give 5 jets as inputs, with \pt ref and using the lite hyperparameters not only has the best pairing efficiency but also the mass sculpting is smaller than with the 4 jets model. Therefore, in the following sections, we will use this model.
+\begin{figure}[hbt]
+    \centering
+    \includegraphics[width=0.6\linewidth]{Images/6.Improving/Mass sculpting/mass sculpting 4j5g.png}
+    \caption{2D mass distribution of the evaluation of the 4 jets 5$^{\text{th}}$ jet model on 2b data}
+    \label{fig: 2D mass sculpting for 4j5g}
+\end{figure}
+
+
+
+\begin{figure}[hbt]
+    \centering
+    \includegraphics[width=0.6\linewidth]{Images/6.Improving/Mass sculpting/mass sculptimg 5j.png}
+    \caption{2D mass distribution of the evaluation of the 5 jet model on 2b data}
+    \label{fig: 2D mass sculpting for 5j}
+\end{figure}
+
+
+For more clarity, we can compare these distributions in the 1D plane. These are shown in Figures \ref{fig: 1D mass sculpting leading} and \ref{fig: 1D mass sculpting subleading} for the leading and the subleading Higgs respectively. In these plots we can compare the two models more accurately and conclude that there is less sculpting when considering the training with 5 jets, for both the leading and the subleading Higgs. Therefore, the model where we give 5 jets as inputs, with \pt ref and using the lite hyperparameters not only has the best pairing efficiency but also the mass sculpting is smaller than with the 4 jets model. Therefore, in the following sections, we will use this model.
+
+\begin{figure}[hbt]
+    \centering
+    \includegraphics[width=0.6\linewidth]{Images/6.Improving/Mass sculpting/lead h sculpting.png}
+    \caption{1D distribution of the Leading Higgs mass for our best models evaluated on 2b data}
+    \label{fig: 1D mass sculpting leading}
+\end{figure}
+
+\begin{figure}[hbt]
+    \centering
+    \includegraphics[width=0.6\linewidth]{Images/6.Improving/Mass sculpting/subleading h sculpting.png}
+    \caption{1D distribution of the Leading Higgs mass for our best models evaluated on 2b data}
+    \label{fig: 1D mass sculpting subleading}
+\end{figure}
 
 The next question that arises when performing these tests, is that after performing several trainings with 5 jets, we observed a variability in the results, which is why, we decided to delve onto the variability of these trainings.
+
+\clearpage
 
 \subsection{Studies for the training variability}
 So as to asses the variability of our model, we performed several trainings fixing the seed to randomly initialize the weights. As a first test to adress this variability issue, in addition to fixing the weights, we started by verifying if the Pytorch version used for the training had an impact on the variability. To do so, we performed 3 different trainings fixing the seeds to 0, 1 and 2 for 3 different versions of Pytorch. We concluded that the variability is independent of the version we use when we fix the seed to initialize the weights, so we decided to use the latest version (2.2.2) for our future trainings. Then, using this version we performed 26 different trainings with 26 different seeds to observe the variability. The results are shown in Figure \ref{fig: 5j variability}, where we plot the validation accuracy for each training. We can see that it clusters around 2 different values: 96.6\% and 94.5\%. Around each value we have a spread of around 0.3\%. Therefore, with these results we can indeed state that there is a large variability of our model (~2\%), with which we don't outperform the pairing efficiency of Run 2. To solve this this, we aim to modify our hyperparameters in order to stabilize our model.
@@ -276,10 +340,30 @@ With the lite model we are using the following hyperparmeters that we aim to mod
 \label{table: }
 \end{table}
 
-In figure \textbf{bla}, we show how the learning rate changes using these new parameters. We can see that instead of reaching the peak of the learning rate after a few epochs, it starts from the maximal value and linearly decreases. After several trainings, we concluded that the most stable configuration is given by the learning rate $10^{-4}$. As we can see in Figure \textbf{bla}, when using the new hyperparameters, taking the smallest learning rate and a batch size of 2048, we see that all of our trainings now cluster around 95.9-96.4\%, which gives a spread of 0.5\%. This variability is acceptable as even taking into account this variability we outperform the Run 2 pairing efficiency. When using a batch size of 1024, our trainings cluster around the same value but with a spread of 0.3\%. However, to use a batch size of 2048 allows us to have faster trainings, therefore, since the difference in the spread is not very significant, we decided to keep a batch size of 2048. 
+In figure \ref{fig: lr comp}, we show how the learning rate changes using these new parameters. We can see that instead of reaching the peak of the learning rate after a few epochs, it starts from the maximal value and linearly decreases. After several trainings, we concluded that the most stable configuration is given by the learning rate $10^{-4}$. As we can see in Figure \ref{fig: stable test}, when using the new hyperparameters, taking the smallest learning rate and a batch size of 2048, we see that all of our trainings now cluster around 95.9-96.4\%, which gives a spread of 0.5\%. This variability is acceptable as even taking into account this variability we outperform the Run 2 pairing efficiency. When using a batch size of 1024, our trainings cluster around the same value but with a spread of 0.3\%. However, to use a batch size of 2048 allows us to have faster trainings, therefore, since the difference in the spread is not very significant, we decided to keep a batch size of 2048. 
 
+\begin{figure}[hbt]
+    \centering
+    \includegraphics[width=0.6\linewidth]{Images/6.Improving/Variability Study/learning rate comp.png}
+    \caption{Comparison of the different learning rates}
+    \label{fig: lr comp}
+\end{figure}
 
-Finally, we studied the difference in the efficiency when varying the number of epochs. In Figure \textbf{bla} we can see that is improved by around 0.4\% when using 300 epochs. In conclusion, after this study the most stable and efficient configuration is given by the parameters showed in Table \ref{table: stable model} .
+\begin{figure}[hbt]
+    \centering
+    \includegraphics[width=0.7\linewidth]{Images/6.Improving/Variability Study/var 2048.png}
+    \caption{Variability on the training using 5 jets as inputs pT reg and stable model parameters from Table \ref{table: stable model}}
+    \label{fig: stable test}
+\end{figure}
+
+Finally, we studied the difference in the efficiency when varying the number of epochs. In Figure \ref{fig: epoch diff} we can see that is improved by around 0.4\% when using 300 epochs. In conclusion, after this study the most stable and efficient configuration is given by the parameters showed in Table \ref{table: stable model} .
+
+\begin{figure}[hbt]
+    \centering
+    \includegraphics[width=0.7\linewidth]{Images/6.Improving/Variability Study/epoch comp.png}
+    \caption{Comparison in the number of epochs of performance the training with 5 jets as inputs using our stable model}
+    \label{fig: epoch diff}
+\end{figure}
 
 \begin{table}[hbt]
 \centering
@@ -305,6 +389,7 @@ Finally, we studied the difference in the efficiency when varying the number of 
 
 We will stick to this configuration for our model in the following sections. As a last test to increase the performance of our model, we perform a grid search, thank to which we are able to tune some of our parameters. This will be presented in the following section.
 
+\newpage
 
 \subsection{Grid search}
 To increase the pairing efficiency, we performed a grid search in order to tune some of the parameters. 
@@ -368,57 +453,204 @@ Number of encoder layers & 5 \\
 \end{table}
 
 By using these new hyperparameters our model has 5.1 M trainable parameters compared to 0.5 M in the Stable model. 
-As can be seen in Figure \textbf{bla}, by using this new hyperparameters, with which we have a much larger model, 
+As can be seen in Figure \ref{fig: comp grid search}, by using this new hyperparameters, with which we have a much larger model, 
 we don't increase that much the performance compared to the Stable model performance. 
-Hence, we decided to use the hyperparameters from the Stable Model. (takes longer)
+Hence, we decided to use the hyperparameters from the Stable Model since it's lighter and the trainings take less time.
+
+\begin{figure}[hbt]
+    \centering
+    \includegraphics[width=0.6\linewidth]{Images/6.Improving/Grid search/grid search.png}
+    \caption{Comparison of the training using the Stable model parameters and the hyperparameters given by the grid search}
+    \label{fig: comp grid search}
+\end{figure}
 
 %Do i mention other traiinngs done by Mathieu?
 
 \newpage
 
-\subsection{Introducing the kl}
+\subsection{Introducing \kl in the trainings}
 
 As explained in section \ref{section: HH4b}, by measuring the di-Higgs production we are aiming to study 
-the Higgs boson self coupling parameter $\lambda$. To do so, by measuring the cross-section of the di-Higgs production, 
-we can obtain information about the parameter lambda $\lambda$ as we can parameterize it in terms of anomalous Higgs
-boson couplings $\kappa_\lambda$, where $\kappa_\lambda$ is defined as follows:
+the Higgs boson self coupling parameter $\lambda$. We can obtain information about it by measuring the cross-section of the di-Higgs production, as the latter can be parameterized in terms of anomalous Higgs boson couplings $\kappa_\lambda$, where $\kappa_\lambda$ is defined as follows:
 
 \begin{equation}
     \kappa_\lambda=\frac{\lambda_{HHH}}{\lambda^{SM}_{HHH}}
 \end{equation}
 
-As can be seen in Figure \textbf{bla}, for different $\kappa_\lambda$ the kinematics 
+As can be seen in Figure \ref{fig: mhh dist}, for different \kl the kinematics 
 of our process change, therefore it is important to train SPANet accordingly. 
 To do so, we will use multiple signal samples with different values of $\kappa_\lambda 
-\in \{-2.0, -1.0, 0.0, 0.5, 1.0, 1.5, 2.0, 2.45, 3.0, 3.5, 4.0, 5.0\}$
+\in \{-2.0, -1.0, 0.0, 0.5, 1.0, 1.5, 2.0, 2.45, 3.0, 3.5, 4.0, 5.0\}$. (Do I specify that we performed a validation study between the private and public samples?)
 
-Present the kl efficiencies of the first trainings just evaluated on the diffrent 
-kl (slide 9- $2024_04_18-HH4b-SPANet_pairing$)
-
-Presen the trainings using kl (sl 11/12)
-
-Comparison od the efficiency of these new trainings sl 15
-
-
-IN the presentation
-
-%At some point I think there was something weird and I can present some of the kinematical variables I plot compared ti the official dataset.
+\begin{figure}[hbt]
+    \centering
+    \includegraphics[width=0.5\linewidth]{Images/6.Improving/kappa lambda/mhh distribution for diff kl.png}
+    \caption{$m_{HH}$ distribution for different values of \kl}
+    \label{fig: mhh dist}
+\end{figure}
 
 
-We also compare traiings with kl as inputs or not, and there we say ok, so they perform the same so since we can't hace that info from data we choose the trainng with no kl as input.
+\vspace{0.2cm}
 
-\subsubsection{Loose/ Tight selections}
+As described in section \ref{subsection:cutflows}, in our first trainings we started by using the Tight cuts and we always evaluated our model on either Montecarlo or data samples where these cuts were applied. Nevertheless, to have a better comparison to the analysis note (cite), we want to to evaluate our trainings in the Loose cuts as they are the ones used. Therefore, not only we will compare the efficiency of our model trained on samples containing different \kl, but we will also compare the efficiency of our trainings when using the Tight and the Loose cuts.
 
-Presen the new cuts, and the distributions for the new evebts
+\noindent We will start by compare the following SPANet models:
 
-Efficiency plots usin gtraiings with loose and tight cuts.
+\begin{table}[h!]
+\centering
+\begin{tabular}{|M{2.5cm}|M{6cm}|}
+ \hline
+ Training  & Configuration  \\
+ \hline
+  SPANet - \kl - Tight selection &  5 jets as inputs:\footnotesize \begin{itemize}[itemsep=0.001em]
+    \item \pt
+    \item $\eta$
+    \item $\phi$
+    \item b-tag
+    \item Tight cuts
+    \item Train file containing events with different \kl but these are not given as explicit inputs to the network
+ \end{itemize}  \\
+ \hline
+ SPANet - \kl - Loose selection &  5 jets as inputs: \footnotesize \begin{itemize}[itemsep=0.001em]
+    \item \pt
+    \item $\eta$
+    \item $\phi$
+    \item b-tag
+    \item Loose cuts
+    \item Train file containing events with different \kl but these are not given as explicit inputs to the network
+ \end{itemize}  \\
+ \hline
+\end{tabular}
+\caption{Configuration of trainings using a sample containing events with different \kl}
+\label{table:kl loose vs tight}
+\end{table}
 
-And accordimg to mass sculpting much better the tight
+In Figure \ref{fig: loose vd tight}, we show the total pairing efficiency differentially in \kl for the trainings presented in Table \ref{table:kl loose vs tight} both evaluated on the test file in which the Loose cuts where applied. We also compare them to the $D_{HH}$-method used in Run 2. From this figure, we can see that the performance is the same for the two trainings within the variability and that they both outperform the $D_{HH}$-method. Nevertheless, if we check the background mass sculpting with these trainings, we can see in Figures \ref{fig: leading H mass dist} and \ref{fig: subleading H mass dist}, that there is quite a significant difference between training with Loose or Tight cuts. Indeed, by training using the Loose cuts it is clear from the figure that for both the Leading and the Subleading Higgs there is much more sculpting of our background. Since this is a feature that we want to avoid for our model, we will stick to the training using Tight cuts but in the next results that will be presented we will always evaluate our model in Loose cuts.
+
+\begin{figure}[hbt]
+    \centering
+    \includegraphics[width=0.6\linewidth]{Images/6.Improving/kappa lambda/loose vs tight.png}
+    \caption{Comparison of trainings using Loose or Tight cuts (plot to be re produced)}
+    \label{fig: loose vd tight}
+\end{figure}
+
+\begin{figure}[hbt]
+    \centering
+    \includegraphics[width=0.6\linewidth]{Images/6.Improving/kappa lambda/leading h mass sculp.png}
+    \caption{1D mass distribution of the leading Higgs (To be reproduced)}
+    \label{fig: leading H mass dist}
+\end{figure}
+
+\begin{figure}[hbt]
+    \centering
+    \includegraphics[width=0.6\linewidth]{Images/6.Improving/kappa lambda/sub leading H mass sculpt.png}
+    \caption{1D mass distribution of the subleading Higgs (To be reproduced)}
+    \label{fig: subleading H mass dist}
+\end{figure}
+
+The next feature we wanted to check regarding trainings with \kl is how much does the efficiency change when including the \kl explicitly as global inputs in our model. Hence, we will be comparing the total pairing efficiency differencially in \kl and in $m_{HH}$ of the models presented in Table \ref{table:kl as input or not}.
+
+\begin{table}[h!]
+\centering
+    \begin{tabular}{|M{4cm}|M{7cm}|}
+     \hline
+     Training  & Configuration \\
+     
+     \hline
+     
+    SPANet - \kl - Tight selection &  5 jets as inputs:\footnotesize 
+    \begin{itemize}[itemsep=0.001em]
+        \item \pt
+        \item $\eta$
+        \item $\phi$
+        \item b-tag
+        \item Tight cuts
+        \item Train file containing events with different 
+        \item \kl not an explicit input to the network
+    \end{itemize} \\
+     
+     \hline
+     
+    SPANet - \kl (\kl inputs)- Tight selection &  5 jets as inputs: \footnotesize 
+    \begin{itemize}[itemsep=0.001em]
+        \item \pt
+        \item $\eta$
+        \item $\phi$
+        \item b-tag
+        \item Loose cuts
+        \item Train file containing events with different \kl
+        \item \kl as global input
+    \end{itemize} \\
+     
+     \hline
+     
+      SPANet - SM - Tight selection &  5 jets as inputs: \footnotesize 
+    \begin{itemize}[itemsep=0.001em]
+        \item \pt
+        \item $\eta$
+        \item $\phi$
+        \item b-tag
+        \item Tight cuts
+        \item Train file containing only events with SM coupling 
+    \end{itemize}\\
+    
+    
+     \hline
+    \end{tabular}
+    \caption{Configuration of trainings using a sample containing events with different \kl}
+    \label{table:kl as input or not}
+\end{table}
+
+In Figures \ref{fig: kl kl input or no input} and \ref{fig: mhh kl input or no input}, we can see the results of this comparison. Firstly, we show in Figure \ref{fig: kl kl input or no input} the total pairing efficiency differencially in \kl.
+We find that by training our model using a sample with different \kl, our performance is improved. However, using \kl as an explicit input to our network does not improve our performance. The same conclusion can be drawn from Figure \ref{fig: mhh kl input or no input}, where we show the total pairing efficiency differencially in $m_{HH}$. Especially in the low $m_{HH}$ mass region, we can see a big improvement compared to the trainings using only SM samples. Finally, in both figures one finds that the pairing efficiency using the $D_{HH}$-method is outperformed.
+
+\begin{figure}[hbt]
+    \centering
+    \includegraphics[width=0.6\linewidth]{Images/6.Improving/kappa lambda/kl inout vs no input.png}
+    \caption{Total pairing efficiency differencially in \kl (To be reproduced)}
+    \label{fig: kl kl input or no input}
+\end{figure}
+
+\begin{figure}[hbt]
+    \centering
+    \includegraphics[width=0.6\linewidth]{Images/6.Improving/kappa lambda/eff diff kl vs kl input.png}
+    \caption{Total pairing efficiency differencially in $m_{HH}$ (To be reproduced)}
+    \label{fig: mhh kl input or no input}
+\end{figure}
 
 
-\subsection{THE OPTIMAL CONFIG}
+
+Since we concluded from these figures that adding \kl as an explicit input does not improve our efficiency, we will use the model where we don't explicitly add \kl as input since when we are evaluating our model on data, we can't know to which \kl corresponds each event. Therefore, since if we evaluate our model on either data or QCD it would be ambiguous what to give to \kl as input, we decide to stick to the SPANet - \kl - Tight selection model.
+
+In Table \ref{table: improvement} we show the values of the pairing efficiency as well as the total pairing efficiency for \kl $\in \{ 0 , 1 , 5 \} $ with our best model. From these values we see that by using the training SPANet - \kl - Tight selection, we have \textbf{4-8\%} absolute improvement with respect to the $D_{HH}$-method, as well as a \textbf{5-14\%} relative improvement ! 
+
+\begin{table}[h!]
+\centering
+\begin{tabular}{|M{2.5cm}||M{1.75cm}|M{1.75cm}||M{1.75cm}|M{1.75cm}||M{1.75cm}|M{1.75cm}|}
+ \hline
+ Training  & Pairing efficiency (\kl=1) &  Total pairing efficiency (\kl=1) & Pairing efficiency (\kl=0) &  Total pairing efficiency (\kl=0) & Pairing efficiency (\kl=5) &  Total pairing efficiency (\kl=5) \\
+ \hline
+  $D_{HH}$-method &  0.944 &  0.836 & 0.921 & 0.808 & 0.739 & 0.603\\
+ \hline
+ SPANet - \kl - Tight selection & 0.952  &  0.880 & 0.932 & 0.853 & 0.792 & 0.685 \\
+ \hline
+\end{tabular}
+\caption{Comparison of the pairing efficiency and the total pairing efficiency between the $D_{HH}$-method and the training SPANet - \kl - Tight selection}
+\label{table: improvement}
+\end{table}
+
+As a final check for this model, we show the 2D mass sculpting of the background. As can be seen in Figure \ref{fig: 2D mass dist kl}, we don't observe any excess of peaks in the signal region.
+
+\begin{figure}
+    \centering
+    \includegraphics[width=0.6\linewidth]{Images/6.Improving/kappa lambda/mass dist best model.png}
+    \caption{2D mass distribution of the  SPANet - \kl - Tight selection model evaluated on 2b data (To be reproduced)}
+    \label{fig: 2D mass dist kl}
+\end{figure}
+
+\clearpage
+
+\subsection{The final configuration}
+After comparing several configurations, we conclude that the best performance for jet pairing is given by the SPANet - \kl - Tight selection model which uses 5 jets as sequential inputs (with \pt reg, $\eta$, $\phi$ and b-tag), no explicit \kl input as global variable as well as the hyperparameters of the stable model shown in Table \ref{table: stable model}.
+
 % jets as inputs, pt reg, lite and stable model, tight cuts, no kl as inout explicitely
-
-
-
-Preent the traiining dataset and nb of events after selections
