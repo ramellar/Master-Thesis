@@ -6,3 +6,41 @@ Direction for comparisons:
 		2) input features
 		3) sample dependency
 		4) for background from MC weight vs no weights
+
+
+Now that we have found are optimal model to maximize the pairing efficiency while 
+reducing as much as possible the background mass sculpting.
+We would now like to use SPANet as signal background classifier aiming 
+to outperform the DNN used in the Run 2 method.
+
+\subsection{Weights for the computation of the loss}
+
+In order to use SPANet as classifier, we need to modify the weights
+for the computation of the loss. Indeed, firstly we need to take into account that in the samples thta we are using
+there much more background than signal events before the preselctions.
+To account for this difference we will introduce the event weights that are
+defined as follows:
+
+\begin{equation*}
+	\text{Event weights}^i_j=\frac{\text{gen}^i_w}{\sum (\text{gen}^i_w)} \times \frac{\sigma^j}{\sum_{j\in S,B}(\sigma^j)}
+\end{equation*}
+
+In this case the gen weight being the weight used in the Montecralo generation of the sample
+and $\sigma$ the cross section of the process per $H_T$ bin $j$. For the signal events,
+the gen weights have the same value but cna get a plus or minus sign before. Moreover, as the cross section is always the same
+the ratio :
+
+\begin{equation*}
+	\frac{\sigma^j}{\sum_{j\in S}(\sigma^j)}=1
+\end{equation*}
+
+Neverthless for the background we have different values. In the followimg sections we will be 
+working with the following backgrounds:
+
+\begin{itemize}
+	\item QCD Montecarlo
+	\item Data
+\end{itemize}
+
+For the QCD Montecarlo we will have different gen weights while for data this is not the case, as can be understood from the definition 
+of the gen weights. The cross-section ratio will allow us to truly compensate for this difference in the number of events before the preselections.
