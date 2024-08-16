@@ -12,7 +12,7 @@
 \usepackage[dvipsnames]{xcolor}
 %\date{March 2023}
 \usepackage[style=numeric,sorting=none]{biblatex}
-\addbibresource{sample.bib}
+\addbibresource{bibliography.bib}
 \usepackage{graphicx,caption}
 \usepackage{xspace}
 \usepackage{subcaption}
@@ -24,6 +24,13 @@
 \usepackage{float}
 \usepackage{indentfirst}
 \usepackage{ragged2e}
+\usepackage{multirow}
+
+\hypersetup{
+    colorlinks=true,
+    linkcolor= Cerulean ,
+}
+
 
 \setcounter{secnumdepth}{4}
 
@@ -33,6 +40,7 @@
 {0pt}{3.25ex plus 1ex minus .2ex}{1.5ex plus .2ex}
 
 \input{particle_def}
+\bibliography{bibliography}
 
 \begin{document}
 
@@ -91,8 +99,6 @@ Write something
 
 \include{Chapters/1.Introduction}
 
-\include{Chapters/2.SM}
-
 \include{Chapters/3.CMS}
 
 \include{Chapters/4.HH4b_Analysis}
@@ -104,10 +110,7 @@ Write something
 \include{Chapters/7.S_B_classification}
 
 \section*{Acknowledgements}
-Questions
-\begin{itemize}
-    \item What is pt reg
-    \item more on the Montecarlo 
-\end{itemize}
+
+
 
 \end{document}
