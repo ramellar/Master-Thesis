@@ -1,9 +1,15 @@
 \documentclass[11pt]{article}
 \usepackage{graphicx} % Required for inserting images
 \usepackage[letterpaper,top=3cm,bottom=3cm,left=3cm,right=3cm,marginparwidth=1.75cm]{geometry}
+\usepackage{amsmath}
+\usepackage{chngcntr} % For numbering within chapters
+
+\numberwithin{figure}{section}  % Number figures as Figure 1.1, 1.2, etc.
+\numberwithin{table}{section}   % Number tables as Table 1.1, 1.2, etc.
+\numberwithin{equation}{section} % Number equations as (1.1), (1.2), etc.
 
 % Useful packages
-\usepackage{amsmath}
+
 \usepackage{array}
 \usepackage[notrig]{physics}
 \usepackage{amssymb}
@@ -26,6 +32,10 @@
 \usepackage{ragged2e}
 \usepackage{multirow}
 
+
+\usepackage{biblatex} %Imports biblatex package
+\addbibresource{bibliography.bib}
+
 \hypersetup{
     colorlinks=true,
     linkcolor= Cerulean ,
@@ -40,7 +50,7 @@
 {0pt}{3.25ex plus 1ex minus .2ex}{1.5ex plus .2ex}
 
 \input{particle_def}
-\bibliography{bibliography}
+
 
 \begin{document}
 
@@ -77,8 +87,7 @@ M2 High Energy Physics
 \\[1cm]
 \textbf{Abstract}\\[1cm]
 \justifying
-Write something
-
+The Higgs boson is the last building block of the Standard Model (SM) of particle physics. Its discovery in 2012 by the ATLAS \cite{ATLASdecouvhiggs} and CMS \cite{CMShiggsdecouv} experiments represents a major breakthrough in particle physics as it proves the existence of a scalar field, with which the particles in the SM interact to gain their mass. Nevertheless,  there is an ongoing experimental effort to further probe the properties of the Higgs boson, for instance, the self-coupling constant $\lambda$. This can be probed in di-Higgs (HH) production. In this thesis, the use of SPANet \cite{SPANet}, an attention-based neural network is proposed for the HH $\to$ 4b analysis. 
 
 \end{titlepage}
 
@@ -109,8 +118,15 @@ Write something
 
 \include{Chapters/7.S_B_classification}
 
+\include{Chapters/Conclusion}
+
 \section*{Acknowledgements}
 
+%My basketball buddy
 
+% \bibliography{bibliography}
+% \bibliographystyle{plain}
+
+\printbibliography
 
 \end{document}

@@ -7,119 +7,109 @@
 % 		3) sample dependency
 % 		4) for background from MC weight vs no weights
 
-
-Now that we have found the optimal model to maximize the pairing efficiency while 
-reducing as much as possible the background mass sculpting,
-we would like to use SPANet as signal/background (S/B) classifier. We will try different trainings and check if we outperform the DNN used for the Run 2 data presented in the AN (cite). In the following sections, we will compare the performance of our trainings when using different input variables, as well as the sample dependency of the background. Although, we will first delve into some technical details on how to implement the weights for the loss function to use SPANet as classifier.
+Along with improving the pairing efficiency, SPANet can also be used as a signal/background (S/B) classifier in the HH $\to$ 4b analysis. In this Section, different trainings are performed and are compared to the DNN used for the signal extraction for partial Run 3 data presented in Section \ref{subsection: DNN}. The difference between the models trained for S/B classification is given by either varying the input variables used for training or the background sample (presented in Section \ref{subsection: samples}) used for the training. Before comparing the performance of the different SPANet trainings, technical details on how to implement the weights for the loss function to use SPANet as a classifier are discussed.
 
 %Add number of events before/ after preselections
 
-\subsection{Weights for the computation of the loss}
+\subsection{Weights for the computation of the loss function} \label{subsection: weights for the loss}
 
-Firstly, in order to use SPANet as classifier, we need to modify the weights for the computation of the loss as we will now be using in the training signal \textbf{and} background events. The sample we will use for the signal events is the same as the one in section \ref{section: improving}.  For the background, we would ideally like to work with morphed 4b data. Unfortunately, we don't have access to this background so we will be using the following ones:
+In order to use SPANet as a classifier, we need to modify the weights for the computation of the loss function as, unlike the previous studies on the SPANet pairing performance, both signal and background samples are used in the training. The signal sample used is the SM signal sample presented in Section \ref{subsection: samples}.  Concerning the background, it would be optimal to use morphed 4b data (presented in Section \ref{subsection: bckg estimation}). As we do not have access to this background dataset, the following background samples will be used:
 \begin{itemize}
 	\item 2b data
-	\item 2b QCD Montecarlo (MC)
-    \item 4b QCD Montecarlo (MC)
+	\item 2b QCD Monte Carlo (MC)
+    \item 4b QCD Monte Carlo (MC)
 \end{itemize}
-As we are now using signal{and} background events, it is important to take into account that the number of events are not the same for the different processes. To do so, we will introduce the {Event weights} and the {Class weights}, that we will explain in the following sections.
+Since in the classification trainings signal and background events are used, it is important to account for the fact that the number of events is not the same for the different processes. In order to do so, {event weights} and {class weights} are introduced. 
 
 %Therefore, to avoid imbalanced data classification problems, we will weight our loss function accordingly.
 
 \subsubsection{Event weights}
 
-The QCD MC and signal events, as the name implies, are MC simulations. When generating these simulations we use the theoretical cross section given by the SM. Nevertheless, with enough computational power it is possible generate as many events as we want of that particular process, which does not necessarily match the number of events in our detector.
-%as the luminosity is not taken into account. 
-Or, if a process is very computationally expensive we can't generate enough simulations that will match the number of events in real data. This is why,  Event weights are usually introduced to rescale the number of events of our process.
+The QCD MC and signal MC are based on simulations. When generating these simulations we use the theoretical cross section given by the SM. With enough computational power, it is possible to generate an arbitrary number of events for a given physics process which does not necessarily match the expected number of events according to the cross-section of the process and the luminosity of the collider. On the contrary, if a process is very computationally expensive it is not feasible to generate enough simulations that will match the number of expected events. Therefore, event weights are introduced to rescale the number of events of the considered process.
 
-In the detector, the expected number of events of a process with cross section $\sigma$ will be given by (cite?):
+The expected number of events of a process with cross-section $\sigma$ will be given by:
 
-\begin{equation*}
+\begin{equation}
     N_{\text{exp}} = \lumi \times \sigma \times \epsilon
-\end{equation*}
+\end{equation}
 
-\noindent With $N_{\text{exp}}$ being the total number of expected events in the detector, $\sigma$ the cross-section of this process, \lumi the integrated luminosity and $\epsilon$ the efficiency defined as follows (cite?):
+\noindent with $N_{\text{exp}}$ being the total number of expected events, $\sigma$ the cross-section of the process, \lumi the integrated luminosity and $\epsilon$ the efficiency defined as follows:
 
 %https://ipnp.cz/scheirich/?page_id=292
 
-\begin{equation*}
+\begin{equation}
     \epsilon= N_{\text{reco}} / N_{\text{gen}}
-\end{equation*}
+\end{equation}
 
-\noindent Where $N_{\text{reco}}$ is the number of events reconstructed in the detector that pass the event selections we defined, and $N_{\text{gen}}$ is the total number of generated events.
+\noindent where $N_{\text{reco}}$ is the number of events reconstructed in the detector that pass the event selections, and $N_{\text{gen}}$ is the total number of generated events.
 
-If we use directly the number of events from the MC production for our analysis we are implying that $N_{\text{exp}}=N_{\text{reco}}$, which is incorrect as $N_{\text{reco}}$ coming from the MC simulation is arbitrary. In order to match this value to the actual value of events we would observe in the detector, we need to multiply $N_{\text{reco}}$ by a corresponding weight. When we write the number of expected events as follows:
-
-\begin{equation*}
-    N_{\text{exp}} = \lumi \times \sigma \times \frac{N_{\text{reco}}}{N_{\text{gen}}}
-\end{equation*}
-
-\noindent the expression of the weight becomes clear:
-
-\begin{equation*}
-    \text{Event weights} = \frac{\lumi \times \sigma}{N_{\text{gen}}}
-\end{equation*}
-
-However, in practice the expression of these weights can vary if we take into consideration Next to Leading Order (NLO) corrections to our process. In this case, most MC generators produce events that already have a weight that is different from 1, called generator-level weights $w_g$.
-% because of the way how the MC integration is implemented in the generator)
-Hence, the formula for our Event weights per event $i$ is modified as follows:
-
-\begin{equation*}
-    \text{Event weights}^i = \lumi \times \sigma \times \frac{w_g^i}{\sum_i w_g^i}
-\end{equation*}
-
-For the signal events, the Event weights are all equal up to a sign, but for the background events these are all different.
-This definition of Event weights can be then used to match the number of events MC produced and the ones observed in data. However, in the following, we want to use these weights to take into account the MC production effects in the loss. Therefore, since the luminosity is just a constant number that is the same for signal and background, and our aim is not to equalize the number of events to data but to use these weights in the computation of the loss, we will not consider it in Eq.(\ref{eq: event weights}) as it is only a linear rescaling of the value of the weight.
-
-One last point we need to take into consideration for the definition of the Event weights we will use is that the production of the QCD background is divided into $H_T$ bins. Therefore each $H_T$ bin has the same number of events and this would give us a flat distribution of the background. But this is not physical, as in reality we have a falling distribution. To take this into account, we will rescale as a function of $H_T$ bins as follows:
+In order to match the number of MC events ($N_{\text{reco}}$) to the expected number of events, $N_{\text{reco}}$ needs to be multiplied by a corresponding weight. When the number of expected events is written as follows:
 
 \begin{equation}
-	\text{Event weights}^i_j =\frac{w_g^i}{\sum_j w_g^j} \times \frac{\sigma^j}{\sum_{j\in S,B}(\sigma^j)}
+    N_{\text{exp}} = \lumi \times \sigma \times \frac{N_{\text{reco}}}{N_{\text{gen}}}
+\end{equation}
+
+\noindent the expression of the weight becomes:
+
+\begin{equation}
+    \text{Event weights} = \frac{\lumi \times \sigma}{N_{\text{gen}}}
+\end{equation}
+
+The expression of these weights can vary if higher-order corrections of the process are taken into account. In this case, MC generators produce events that are associated with a weight that is different from 1, called generator-level weights $w_g$.
+% because of the way how the MC integration is implemented in the generator)
+Hence, the formula for the event weights per event $i$ is modified as follows:
+
+\begin{equation}
+    \text{Event weights}^i = \lumi \times \sigma \times \frac{w_g^i}{\sum_i w_g^i}
+    \label{eq: event weight eq}
+\end{equation}
+
+In Eq.(\ref{eq: event weight eq}), the luminosity is a constant number that is the same for the signal and background. Therefore, the difference between signal and background events is given by the value of the cross-section, and by the generator-level weights. The latter are all equal up to a sign for the signal events but are different for each background event. In the following, these weights are used to take into account the MC production effects in the loss function, but not to equalize the number of events to data. Therefore, the luminosity will not be considered in the expression of event weights that will be used, as it is a constant that multiplies the weights for both signal and background. Additionally, it is to note that the production of the QCD background is divided into $H_T$ bins (explained in Section \ref{subsection: kinematic vars}). Therefore each $H_T$ bin has the same number of events and this would give us a flat \Ht spectrum of the background. But this is not physical, as a falling \Ht spectrum is expected. To take the kinematics of the QCD processes in \Ht bins into account in the event weights, the number of events is rescaled as a function of \Ht bins as follows:
+
+\begin{equation}
+	\text{event weights}^i_j =\frac{w_g^i}{\sum_j w_g^j} \times \frac{\sigma^j}{\sum_{j\in S,B}(\sigma^j)}
  \label{eq: event weights}
 \end{equation}
-\noindent where $\sigma$ is the cross section of the process per $H_T$ bin $j$. 
-
-When using Eq.(\ref{eq: event weights}),  for signal events we always consider the same process hence the $\sigma$ ratio is equal to 1:
-\begin{equation*}
+\noindent where $\sigma$ is the cross-section of the process per $H_T$ bin $j$. For signal events, the process considered is always the same (e.g. the signal sample is not divided into sub-samples characterized by different cross-sections), hence in Eq.(\ref{eq: event weights}) the $\sigma$ ratio is equal to 1:
+\begin{equation}
 	\frac{\sigma_S^j}{\sum_{j\in S}(\sigma_S^j)}=1
-\end{equation*}
+\end{equation}
 
-For the background we have different values of the cross-section per $H_T$ bin as we are considering many different QCD processes in the same sample, each of them having a different $\sigma$.
+Regarding the background processes, the value of the cross-section depends on the considered \Ht bin (see Table \ref{table: QCD  multijet}), therefore, the value of the $\sigma$ ratio varies.
 
 \vspace{0.1 cm}
 
-\noindent Ultimately, as an example, we give the following values for the Event weights:
+\noindent We give the following values for the event weights as an example:
 
 \begin{itemize}
     \item $\text{Event weight for signal per event} \sim 10^{-3}$
     \item $\text{Event weight for 4b-QCD per event} \sim 10^{-5}-10^{-9}$
 \end{itemize}
 
-However, a new problem arises as for signal events the weights are much larger than for background events. To give an example, if we compute the total loss as follows :
+It is observed that for signal events, the event weights are much larger than for background events. To give an example, if we compute the total loss as follows :
 
 \begin{equation}
-    L_{\text{tot}}= \sum_{q \in \text{batch}} [\frac{L_q \cdot w^e_q}{\sum_q w^e_q} ] ,
+    L_{\text{tot}}= \sum_{q \in \text{batch}} \bigg[\frac{L_q \cdot w^e_q}{\sum_q w^e_q} \bigg] ,
 \label{Eq: loss event weights}
 \end{equation}
 
-\noindent we could be incorrectly classifying our events even if we have an overall low loss. It could occur that the loss for signal events is low while for background events is high, then, we will have an overall low total loss as our signal Event weights (and the sum of them) is very high, but our events will be wrongly classified.
+\noindent we could be incorrectly classifying our events even if we have an overall low loss function. The imbalance of the weights, i.e. the weights not being in the same order of magnitude, will be treated in the next Section.
 
-In conclusion, we need to introduce the Event weights to account for MC production features like NLO effects and the background shape of the QCD sample.
 
 \subsubsection{Class weights}
 
-To account for the imbalance of the weights, we will introduce the {Class weights} that are defined as follows (cite):
+To account for the imbalance of the weights, class weights are introduced and defined as follows (cite):
 
 \begin{equation}
-    \text{Class weights}^{S,B} = (1- \beta)/ (1- \beta^{\sum_{i,j\in S,B}\text{Event weights}^i_j})
+    \text{class weights}^{S,B} = (1- \beta)/ (1- \beta^{(\sum_{i,j\in S,B}\text{event weights}^i_j)})
     \label{Eq:class weights}
 \end{equation}
 
-\noindent with $\beta= 1 - (1/\sum (\text{Event weights}))$.
+\noindent with $\beta= 1 - (1/\sum (\text{event weights}))$.
 
 \vspace{0.1cm}
 
-This formula is given in (cite) and is proven to be the best way to compute these weights. As we can see in Eq.(\ref{Eq:class weights}), it takes into account the number of events in the sample, as we are summing over all the events $i$, as well as the value of the Event weight. Therefore, whether there are more signal or background events the weights will balance out this difference in the computation of the loss as we are taking into account the value of the Event weights and the number of events per class. For instance, by using this formula, we have for the Class weights:
+Eq.(\ref{Eq:class weights}) takes into account the number of events in the sample, as we are summing over all the events $i$, as well as the value of the event weight. Therefore, the weights will balance out this difference in the computation of the loss in the presence of unbalanced signal and background event numbers. For instance, by using this formula, the class weights are:
 \begin{itemize}
     \item $\text{Class weight for signal per event} \sim 2.452 \times 10^{-4}$
     \item $\text{Class weight for 4b-QCD background per event} \sim 1.999$
@@ -128,11 +118,12 @@ This formula is given in (cite) and is proven to be the best way to compute thes
 
 \subsubsection{Total weights and computation of the total loss}
 
-\noindent Now that we presented the Event and Class weights we can compute the Total weights that are given by:
-\begin{equation*}
-    \text{Total weights}^i = \text{Event weights}^i \times \text{Class weights}^i
-\end{equation*}
-As we can see from the values in our previous sections, when multiplying our Event and Class weights we obtain a total weight per event that is balanced. The values of the Total weights summed over all events for each configuration are given in Table \ref{table: weights outside SR}.  (The distinction between reduced statistics and full statistics will be explained in section \ref{subsection: sample dep})
+\noindent It is possible to compute the total weights per event $i$ given by:
+\begin{equation}
+    \text{Total weights}^i = \text{event weights}^i \times \text{class weights}^i
+    \label{eq: total weights}
+\end{equation}
+As shown by comparing values discussed in the previous Sections, when multiplying our event and class weights a total weight per event that is balanced for signal and background is obtained. The values of the total weights summed over all events for each configuration are given in Table \ref{table: weights outside SR} (the distinction between reduced statistics and full statistics will be explained in section \ref{subsection: sample dep}). Table \ref{table: weights outside SR} shows that the weights are balanced.
 
 \begin{table}[h!]
 \centering
@@ -149,23 +140,21 @@ As we can see from the values in our previous sections, when multiplying our Eve
  2b-data (full statistics) & 2.49 &  1.51 \\
  \hline
 \end{tabular}
-\caption{Sum of the total weights for the configurations presented in Table \ref{table: S/B trainings}. These results are obtained by multiplying the Event and the Class weights that are used in the computation of the loss}
+\caption{Sum of the total weights for the 4b-QCD, 2b-QCD and 2b-data configurations. These results are computed using Eq.(\ref{eq: total weights}).}
 \label{table: weights outside SR}
 \end{table}
 
-In Table \ref{table: weights outside SR} we show that the weights are balanced (always same order of magnitude), and in their computation, we are taking into account MC production NLO and background effects without having imbalanced weights.
+\noindent The computation of the loss function for the classification is then given by:
 
-\noindent In practice, the computation of the loss for the classification is then given by:
+\begin{equation}
+    L=\frac{\sum_{i\in \text{batch}} w^e_i l_i}{\sum_i w^e_i},
+\end{equation}
 
-\begin{equation*}
-    L=\frac{\sum_{i\in \text{batch}} w^e_i l_i}{\sum_i w^e_i}
-\end{equation*}
-
-\noindent where $w^e$ are the Event weights and $l$ is the cross-entropy loss function of Pytorch (cite). In the computation of the latter, the Class weights are taken into account. Hence, in conclusion, we have a loss function where the difference in the number of events between signal and background events as well as the MC production effects are taken into account.
+\noindent where $w^e$ are the event weights and $l$, is the cross-entropy loss function of Pytorch \cite{CrossEntPytroch}. In the computation of the latter, the class weights are taken into account. In conclusion, we achieve a loss function where the difference in the number of events between signal and background events as well as the MC production effects are properly accounted for. In the following Sections, results showing weighted and unweighted plots will be discussed.
 
 \subsection{Input features}
 
-As sequential input variables for our training, we will give the 4-vector of the 5 jets with leading b-tag. Then, we will try different configurations with the global variables. Firstly, we will give as global inputs the variables used in the DNN used for Run 2 (cite):
+As sequential input variables for the SPANet training, the 4-vector of the 5 jets with leading b-tag (variables defined in Section \ref{subsection: kinematic vars}) is given to the network. Afterwards, different configurations will be tested with the global variables. Firstly, as global inputs the variables used in the DNN used for Run 3 (cite) are given to SPANet:
 
 \begin{itemize}
     \item $\Delta R$ maximum between jets
@@ -175,44 +164,46 @@ As sequential input variables for our training, we will give the 4-vector of the
     \item \pt, $\eta, \phi, \Delta R, \text{cos}(\theta)^*, m, \Delta\eta, \Delta \phi, m$ of the di-Higgs system
 \end{itemize}
 
-\noindent In the following sections, we will be referring to the ensemble of these variables as the {DNN variables}.
+\noindent In the following Sections, we will be referring to the ensemble of these variables as the {DNN variables}.
 
 
-\subsubsection{Probability difference variable}
+\subsubsection{Probability difference variable} \label{subsubsection: PD var}
 
-In addition to the DNN variables presented before, we propose to give as global input a variable that we will refer to as {Probability difference variable} (PD). It is defined as the difference between the best and second best pairings predicted by SPANet.
+In addition to the DNN variables presented before, it is proposed to give as global input a variable that we will refer to as {Probability Difference variable} (PD). It is defined as the difference between the best and second-best pairings predicted by SPANet.
 
-When a SPANet model is evaluated on a signal event the best pairing will have a very high probability (close to 1) since in truth there is one true pairing. Therefore, the second best pairing will have a very small probability and the difference of these two will be a high value. On the contrary, for the background, the best and second best probabilities will both most likely have a probability of around 0.5 as this choice of the pairing is random due to the fact that there is no true pairing in this case. The difference of these two will then have a very small value. This variable has a big discriminant power that is very useful when using SPANet as S/B classifier. In the next part we will explain how can we obtain the best and the second best pairing probabilities.
+When a SPANet model is evaluated on a signal event the best pairing will have a very high probability (close to 1) since there is one true pairing. The second-best pairing will have a very small probability and the difference between these two will be a high value. On the contrary, for the background, the best and second best probabilities will both most likely have a probability of around 0.5 as this choice of the pairing is random because there is no true pairing in the background case. The difference of these two will have a very small value. This variable has a large discriminating power that is very useful when using SPANet as S/B classifier.
+
+\
 
 
-After evaluating a SPANet model on the test file, we obtain as output the pairing with highest probability, i.e it gives us as output the pair of jets with the highest probability to be matched to the generator-level quarks coming from the decay of the leading and the sub-leading Higgs. This result is what we used in section \ref{section: improving}. Nevertheless, it is also possible to have as output the full matrix with all the probabilities of the pairings for the leading and the sub-leading Higgs, as illustrated in Figure \ref{fig: probabilities matrix}.
+After evaluating a SPANet model on the test file, we obtain as output the pairing with the highest probability, i.e SPANet gives as output the pair of jets with the highest probability to be matched to the generator-level quarks coming from the decay of the leading and the sub-leading Higgs. This result is used in Section \ref{section: improving}. It is also possible to have as output the full matrix with all the pairing probabilities of the jets for the leading and the sub-leading Higgs, as illustrated in Figure \ref{fig: probabilities matrix}.
 
 
 \begin{figure}[hbt]
     \centering
     \includegraphics[width=0.8\linewidth]{Images/7.S:B/Prob diff/probability difference.pdf}
-    \caption{Matrix of probabilities of the pairing of the jets. As 5 jets are considered for the pairing, we have a 5x5 matrix. The lines and the columns correspond to the jets used for the pairing. The jets of the columns correspond to the jets matched to one of the quarks coming from the decay of one Higgs and the lines to the other quark coming from the decay. In each square we will have the value of the probability of pairing these jets together. Since it is impossible to pair the same jet together, the diagonal is 0. This is a symmetric matrix as we can't distinguish quark from anti-quark in the detector. In red, we have the highest pairing probabilities that are compatible and in orange the second highest.}
+    \caption{Matrix of probabilities of the pairing of the jets. As 5 jets are considered for the pairing, we have a 5x5 matrix. The diagonal is 0, as a single jet cannot be paired with itself. This is a symmetric matrix as quarks from anti-quarks cannot be distinguished in the detector. In red, the highest pairing probabilities that are compatible are shown and the second highest are represented in orange.}
     \label{fig: probabilities matrix}
 \end{figure}
 
-As we use 5 jets for the pairing, in Figure \ref{fig: probabilities matrix} a 5x5 matrix is shown. In each square we will have the value of the probability of matching these jets in the event together. Since it is impossible to pair the same jet together, the diagonal is 0. This is a symmetric matrix as we can't distinguish quark from anti-quark in the detector. 
+Figure \ref{fig: probabilities matrix} shows a 5x5 matrix since we consider 5 jets for the pairing. Each entry of the matrix corresponds to the probability of matching these jets in the event together. Since it is impossible to pair a single jet with itself, the diagonal is 0. Due to the quark/antiquark symmetry of the pairing explained in Section \ref{subsection: run2 pairing} this matrix is symmetric.
 
-To find the highest pairing probabilities, what SPANet does using this matrix is to first look for the overall highest probability, i.e the highest probability in the leading or sub-leading Higgs matrices. In Figure \ref{fig: probabilities matrix}, the overall highest probability is shown in dark red. Once this one has been found, we can move to the other matrix and find the highest probability that is compatible with the first one, i.e that is not sharing the same jets. The latter is showed in light red. (In this example, we see the matching is compatible since for the dark red the jets 0 and 1 are paired while for the light red the jets 3 and 2 are paired). As a next step to compute the PD variable is to find the second best pairing in this matrix. To do so, we will start by removing the best pairings determined earlier (red crosses) but we will also be removing the symmetric one in the other matrix (black crosses) as we have a symmetry between the leading and the sub-leading Higgs. Finally, we apply the same procedure to find the second best pairing. In this second example, the highest second pairing is depicted in dark orange. We find the complementary one on the other matrix in light orange.
+To find the highest pairing probabilities, the SPANet pairing algorithm uses the overall highest probability, i.e. the highest probability in the leading or sub-leading Higgs matrices. In Figure \ref{fig: probabilities matrix}, the overall highest probability is shown in dark red. Once this probability has been found, the algorithm uses the subleading Higgs matrix in order to find the highest probability that is compatible with the first one, i.e. that does not share the same jets. The latter is shown in light red. In this example, it is observed that the matching is compatible since for the dark red the jets 0 and 1 are paired while for the light red, the jets 3 and 2 are paired. The next step to compute the PD variable is to find the second-best pairing in this matrix. To do so, firstly, the best pairings determined earlier are removed (red crosses). Moreover, the symmetric probabilities in the other matrix are removed (black crosses) as we have a symmetry between the leading and the sub-leading Higgs. Finally, the same procedure is applied to find the second-best pairing. In this second example, the highest second pairing is marked in dark orange. We find the complementary one on the other matrix in light orange.
 
-To use this variable in the training, we will evaluate the best SPANet model presented in section \ref{subsection: Optimal config} on the signal and the background files that we will use to train the classifier. Once the evaluation is complete, we will add the PD variable found as global input to the classifier. 
-In Figures \ref{fig: 2b data PD}, \ref{fig: 2b QCD PD} and \ref{fig: 4b QCD PD} we show the PD variable for signal and background events. We observe the high discriminant power of this variable, especially in Figures \ref{fig: 2b data PD} and \ref{fig: 2b QCD PD} when considering the 2b data and 2b QCD as background in our training.
+To use this variable in the training, the best SPANet model presented in Section \ref{subsection: Optimal config} is evaluated on the signal and the background inputs that we will use to train the classifier. 
+In Figures \ref{fig: 2b data PD}, \ref{fig: 2b QCD PD} and \ref{fig: 4b QCD PD} we show the PD variable for signal and background events. We observe the high discriminant power of this variable, especially in Figures \ref{fig: 2b data PD} and \ref{fig: 2b QCD PD} when considering the 2b data and 2b QCD as background in the SPANet training.
 
 \begin{figure}[hbt]
     \centering
     \includegraphics[width=0.7\linewidth]{Images/7.S:B/Prob diff/2b data reduced.png}
-    \caption{Probability difference variable distribution in arc-tan for signal and 2b data background events. We show the weighted and non weighted events. As this is a 2b data sample, the weighted and non weighted distributions are the same due to the definition of Event weights}
+    \caption{Probability difference variable distribution in arc-tan used to extend the distributions, for signal and 2b data background events. The weighted and non weighted events, as mentioned in Section \ref{subsection: weights for the loss}, are shown. As this is a 2b data sample, the weighted and non weighted distributions are the same due to the definition of event weights.}
     \label{fig: 2b data PD}
 \end{figure}
 
 \begin{figure}
     \centering
     \includegraphics[width=0.7\linewidth]{Images/7.S:B/Prob diff/2b QCD arctan.png}
-    \caption{Probability difference variable distribution in arc-tan for signal and 2b QCD background events. We show the weighted and non weighted events, using the Event weights.}
+    \caption{Probability difference variable distribution in arc-tan used to extend the distributions, for signal and 2b data background events. The weighted and non weighted distributions are shown.}
     \label{fig: 2b QCD PD}
 \end{figure}
 
@@ -220,16 +211,17 @@ In Figures \ref{fig: 2b data PD}, \ref{fig: 2b QCD PD} and \ref{fig: 4b QCD PD} 
 \begin{figure}[hbt]
     \centering
     \includegraphics[width=0.7\linewidth]{Images/7.S:B/Prob diff/4b QCD arctan.png}
-    \caption{Probability difference variable distribution in arc-tan for signal and 4b QCD background events. We show the weighted and non weighted events}
+    \caption{Probability difference variable distribution in arc-tan used to extend the distributions, for signal and 2b data background events. The weighted and non weighted distributions are shown.}
     \label{fig: 4b QCD PD}
 \end{figure}
 
-Finally, we show in Figure \ref{fig: ROC PD} the weighted ROCs of the probability difference distributions. We observe for 2b data and 2b QCD a sudden increase of FPR at 90\% of signal efficiency. This is due to the fact that most of the background events have a highest best pairing probability of around 0.5 and the second best one has a really a value close to 0, therefore we have a peak of events at $\Delta$Probability = 0.5, which corresponds to 90\% of signal efficiency and explains this excess in FPR events.
+
+Finally, as a figure of merit to assess the discriminating power of the PD variable, the Receiver Operating Characteristic (ROC) curve is used. The latter depicts the signal efficiency versus the misidentification rate of background events across various threshold selections. Figure \ref{fig: ROC PD} shows the weighted ROC curves of the probability difference distributions from Figures \ref{fig: 2b data PD}, \ref{fig: 2b QCD PD}, \ref{fig: 4b QCD PD}. In the latter, the False Positive Rate (FPR) refers to 1-$\epsilon_b$, with $\epsilon_b$ being the background efficiency taken as the fraction of background below the threshold. Finally, the True Positive Rate (TPR) refers to $\epsilon_s$, with $\epsilon_s$ being the signal efficiency taken as the fraction of background above the threshold. Figure \ref{fig: ROC PD} shows that for 2b data and 2b QCD an increase of FPR, at 90\% of signal efficiency. This is due to the fact that most of the background events have a highest best pairing probability of around 0.5 and the second best one has a value close to 0, therefore a peak of events is observed at $\Delta$Probability = 0.5, which corresponds to 90\% of signal efficiency and explains this feature in the ROC curve for FPR=90\%.
 
 \begin{figure}
     \centering
     \includegraphics[width=0.7\linewidth]{Images/7.S:B/Prob diff/Probability difference ROC curve.png}
-    \caption{Weighted ROCs of the probability difference variables distributions shown in Figures \ref{fig: 2b data PD}, \ref{fig: 2b QCD PD} and \ref{fig: 4b QCD PD} for 2b data, 2b QCD and 4b QCD}
+    \caption{Weighted ROC curves of the probability difference variables distributions shown in Figures \ref{fig: 2b data PD}, \ref{fig: 2b QCD PD} and \ref{fig: 4b QCD PD} for 2b data, 2b QCD and 4b QCD. The AUC of these ROC curves is also reported in the plot.}
     \label{fig: ROC PD}
 \end{figure}
 
@@ -237,60 +229,19 @@ Finally, we show in Figure \ref{fig: ROC PD} the weighted ROCs of the probabilit
 
 \subsection{Sample dependency} \label{subsection: sample dep}
 
-As mentioned earlier, we would ideally like to use 4b morphed data for our training. Nevertheless, as this is not possible yet, we will test 3 different configurations for our training. For each configuration we will be comparing the training using only DNN variables as inputs or DNN and Probability difference variables. These configurations are summarized in Table \ref{table: S/B trainings}.
+As mentioned earlier, it would be optimal to use 4b morphed data for the SPANet training. Nevertheless, as this is not possible yet, the 4b data performance will be assessed differently using three different configurations presented later in the text. These configurations are given by either using 4b QCD, 2b QCD, or 2b data, defined in Section \ref{subsubsecxtion: 4/2 b regions} as background samples. We will refer to each configuration in the following by the name of the sample used for the background in the training. For each configuration, we will be comparing the training using only DNN variables as inputs or DNN and PD variables.
 
-\begin{table}[h!]
-\centering
-\begin{tabular}{|M{3cm}|M{10cm}|}
- \hline
- Configuration  & Inputs  \\
- \hline
- \multirow{2}{*}[0pt]{\raisebox{-3.4\height}{4b QCD}}  & \begin{itemize}[itemsep=0.01em]
-    \item 4-vector of the 5 jets in leading b-tag
-    \item DNN variables (global input)
- \end{itemize} \\ 
- \cline{2-2}
-   &  \begin{itemize}[itemsep=0.01em]
-    \item 4-vector of the 5 jets in leading b-tag
-    \item DNN and PD variables (global input)
- \end{itemize} \\
- \hline
- \multirow{2}{*}[0pt]{\raisebox{-3.4\height}{2b QCD}}  & \begin{itemize}[itemsep=0.01em]
-    \item 4-vector of the 5 jets in leading b-tag
-    \item DNN variables (global input)
- \end{itemize} \\ 
- \cline{2-2}
-   &  \begin{itemize}[itemsep=0.01em]
-    \item 4-vector of the 5 jets in leading b-tag
-    \item DNN and PD variables (global input)
- \end{itemize} \\
- \hline
-  \multirow{2}{*}[0pt]{\raisebox{-3.4\height}{2b data}}  & \begin{itemize}[itemsep=0.01em]
-    \item 4-vector of the 5 jets in leading b-tag
-    \item DNN variables (global input)
- \end{itemize} \\ 
- \cline{2-2}
-   &  \begin{itemize}[itemsep=0.01em]
-    \item 4-vector of the 5 jets in leading b-tag
-    \item DNN and PD variables (global input)
- \end{itemize} \\
- \hline
-\end{tabular}
-\caption{Configuration of the different trainings for S/B classification. We will be comparing the different configurations as well as the inputs for each configuration}
-\label{table: S/B trainings}
-\end{table}
-
-So as to have a better comparison to the performance of the DNN used in Run 2 presented in the AN (cite) where they used the 4b morphed data, we will extrapolate our results to have an idea what we would obtain if we used 4b data in our training. To do so, we will extrapolate the value of the area under the curve (AUC) by using the following expression:
+In order to have a meaningful comparison to the performance of the DNN used in Run 3 presented in the AN (cite) where the 4b morphed data is used for the training, the results of the SPANet training will be inferred in the 4b data. To do so, we will infer the value of the area under the curve (AUC) by using the following expression:
 
 \begin{equation}
-    \text{AUC}(\text{4b-data})= \text{AUC}(\text{2b-data}_f) \times \textcolor{BlueGreen}{\frac{\text{AUC}(\text{4b-QCD})}{\text{AUC}(\text{2b-QCD}_r)}} \times \textcolor{WildStrawberry}{\frac{\text{AUC}(\text{2b-QCD}_r)}{\text{AUC}(\text{2b-data}_r)}}
+    \text{AUC}(\text{4b-data})= \text{AUC}(\text{2b-data}_f) \times {\frac{\text{AUC}(\text{4b-QCD})}{\text{AUC}(\text{2b-QCD}_r)}} \times {\frac{\text{AUC}(\text{2b-QCD}_r)}{\text{AUC}(\text{2b-data}_r)}}
     \label{eq: extrapolation}
 \end{equation} 
-\noindent Since the 4b morphed data and the 2b data have the same number of events, we use the value of the AUC of the full statistics 2b data (black). In order to go from 2b to 4b data, we would like to take into account the b-tag dependency of our model. This value will be given by the first ratio (\textcolor{BlueGreen}{blue}). Nevertheless, this b-tag ratio is computed using QCD MC samples, therefore we need to take into account the difference that the model (meaning using either QCD or data samples) makes. This model dependency is given by the second ratio (\textcolor{WildStrawberry}{pink}).  Finally, on both ratios we see $r$, that stands for reduced statistics. As we aim to probe the b-tag dependency and the model dependency, we perform a random removal of events so that the effective statistics are the same. In this case, we will use the statistics of the 4b data ($\sim$ 100k events), since it is the dataset with the lowest number of events.
+\noindent Since the 4b morphed data and the 2b data have the same number of events, the value of the AUC of the 2b data full statistics (black) is used. The $f$ in Eq.(\ref{eq: extrapolation}) refers to same with full statistics. In order to infer SPANet predictions from 2b to 4b data, the ratio 4b/2b accounts for the b-tag dependency of the SPANet model. This value will be given by the first ratio (${\frac{\text{AUC}(\text{4b-QCD})}{\text{AUC}(\text{2b-QCD}_r)}}$). Nevertheless, this b-tag ratio is computed using QCD MC samples, therefore the additional dependency on the sample (QCD vs data sample) needs to be accounted for as well. This is encapsulated in the second ratio term (${\frac{\text{AUC}(\text{2b-QCD}_r)}{\text{AUC}(\text{2b-data}_r)}}$). Finally, both ratios have been extracted using a reduced dataset (marked with $r$ in Eq.(\ref{eq: extrapolation})). As we aim to probe the b-tag dependency and the model dependency, we perform a random removal of events so that the effective statistics of numerator and denominator is the same and therefore do not play any role in the comparison. The statistics of the 4b data ($\sim$ 100k events) will be used since it is the dataset with the lowest number of events.
 
-For the extrapolation of the ROC curve we will use Eq.(\ref{eq: extrapolation})  to compute the value of the false positive rate (FPR) instead of the AUC. Nonetheless, we will apply this formula to the true positive rate (TPR) values or this will result in a rescaling of thee 2b-data ROC. This is why, for the 4b-data extrapolated ROC we will be using the modified FPR values and the TPR values from the 2b-data full statistics training. 
+In order to infer the ROC curve, Eq.(\ref{eq: extrapolation}) is used to compute the value of the FPR instead of the AUC. Nonetheless, applying Eq.(\ref{eq: extrapolation}) to the TPR as well will result in a linear rescaling of the 2b data ROC curve and not the ROC curve inferred for the 4b data. However, if a training using 4b morphed data is performed, the signal sample would be the same used for the 2b data trainings thus the TPR values would remain similar. Therefore to obtain the inferred 4b data ROC curve the TPR values from the 2b data ROC curve are used and only the FPR is modified.
 
-Our ultimate goal will then be to perform this extrapolation. However, we first need the results of the trainings with 4b-QCD, 2b-QCD reduced statistics, 2b-data reduced statistics and 2b-data full statistics that will be presented in the following sections.
+%The final goal is to infer the 4b data ROC curve which will be shown in Sections \ref{subsection:4b data extrapolation inclusivce} and \ref{subsubsection: train and eev on SR}. However, as discussed in Eq.(\ref{eq: extrapolation}) the results of the trainings with 4b-QCD, 2b-QCD reduced statistics, 2b-data reduced statistics and 2b-data full statistics are needed to infer this result.
 
 
 \subsection{Results on the input comparison} \label{subsection: results on the trainings}
@@ -298,44 +249,43 @@ Our ultimate goal will then be to perform this extrapolation. However, we first 
 %Compare weighted and non weighted
 %also for the SPANet
 
-In this section we will present the results of the trainings shown in Table \ref{table: S/B trainings}. In Figures \ref{fig: 4b QCD comp input}, \ref{fig: 2b QCD comp input} and \ref{fig: 2b data comp input} we show the weighted ROCs of these trainings. From these figures one can see that for 2b-QCD (Fig.\ref{fig: 2b QCD comp input}) and 2b-data (Fig.\ref{fig: 2b data comp input}) samples, adding the PD variable results in a significant improvement of our classification. For the 4b-QCD configuration (Fig. \ref{fig: 4b QCD comp input})  the performance is only slightly increased.  The difference in the improvement when adding the PD variable between 4b and 2b can be understood by looking at Figures \ref{fig: 2b data PD}, , \ref{fig: 2b QCD PD} and \ref{fig: 4b QCD PD}. Indeed, we observe that the discriminant power of the PD variable is lower when using 4b-QCD.
+In this Section, we will present the results of the trainings using the 2b data, 2b QCD, and 4b QCD configurations. In Figures \ref{fig: 4b QCD comp input}, \ref{fig: 2b QCD comp input} and \ref{fig: 2b data comp input} we show the weighted ROCs of these trainings. It is observed that for 2b-QCD (Fig.\ref{fig: 2b QCD comp input}) and 2b-data (Fig.\ref{fig: 2b data comp input}) samples, adding the PD variable results in a significant improvement of the classification performance. For the 4b-QCD configuration (Fig. \ref{fig: 4b QCD comp input})  the performance is only slightly increased.  The difference in the improvement when adding the PD variable between 4b and 2b can be explained by looking at Figures \ref{fig: 2b data PD}, \ref{fig: 2b QCD PD} and \ref{fig: 4b QCD PD}, where it is observed that the discriminating power of the PD variable is lower when using 4b-QCD. Nevertheless, after performing several tranings, a variability impacting the performance is observed. This will be quantitatively discussed in Section \ref{subsection: var of training S/B}.
 
-Nevertheless, it is important to point out that we performed several trainings with the 4b configuration and it occurred that we obtained a worse performance when adding the PD. This observed feature is very surprising and to try to understand it, in the following section, we will be interested in assessing the variability of these trainings with respect to the ROCs.
 
 \begin{figure}[hbt]
     \centering
     \includegraphics[width=0.7\linewidth]{Images/7.S:B/Inputs/4b QCD bis.png}
-    \caption{Weighted ROCs comparing the performance using different global inputs for the 4b-QCD configuration presented in Table \ref{table: S/B trainings}}
+    \caption{Weighted ROC curves of the 4b-QCD configuration comparing the performance using different global inputs (DNN vs DNN and PD).}
     \label{fig: 4b QCD comp input}
 \end{figure}
 
 \begin{figure}[hbt]
     \centering
     \includegraphics[width=0.7\linewidth]{Images/7.S:B/Inputs/2b QCD.png}
-    \caption{Weighted ROCs comparing the performance using different global inputs for the 2b-QCD configuration presented in Table \ref{table: S/B trainings}}
+    \caption{Weighted ROC curves of the 2b-QCD configuration comparing the performance using different global inputs (DNN vs DNN and PD).}
     \label{fig: 2b QCD comp input}
 \end{figure}
 
 \begin{figure}[hbt]
     \centering
     \includegraphics[width=0.7\linewidth]{Images/7.S:B/Inputs/2b data.png}
-    \caption{Weighted ROCs comparing the performance using different global inputs for the 2b-data configuration presented in Table \ref{table: S/B trainings}}
+    \caption{Weighted ROC curves of the 2b-data configuration comparing the performance using different global inputs (DNN vs DNN and PD).}
     \label{fig: 2b data comp input}
 \end{figure}
 
-Finally, we show the non weighted ROC for the 4b-QCD configuration. We observe in Figure \ref{fig: 4b QCD ROC no weights} that the distribution is much smoother compared to the one in Figure \ref{fig: 4b QCD comp input}. This feature can be understood by looking at the SPANet output of the classification, in Figure \ref{fig: SPANet output S/B 4b QCD}. Indeed adding the weights adds a lot of fluctuation to the distribution which are then reflected in the ROC. Nevertheless, in the following we will only show the weighted ROC curves as they allow a correct comparison to the AN results.
+Finally, the non weighted ROC for the 4b-QCD configuration is shown. Figure \ref{fig: 4b QCD ROC no weights} shows that the distribution is smoother compared to the ROC curves in Figure \ref{fig: 4b QCD comp input}. This feature is explained by looking at the SPANet output of the classification in Figure \ref{fig: SPANet output S/B 4b QCD}: adding the weights adds fluctuations to the SPANET score distribution which are reflected in the ROC curve. Nevertheless, in the following, only the weighted ROC curves will be shown as they allow a meaningful treatment of the signal/background components in the training.
 
 \begin{figure}[hbt]
     \centering
     \includegraphics[width=0.7\linewidth]{Images/7.S_B/Inputs/no weights 4b QCD.png}
-    \caption{Unweighted ROCs comparing the performance using different global inputs for the 4b-QCD configuration presented in Table \ref{table: S/B trainings}}
+    \caption{Unweighted ROC curves of the 4b-QCD configuration comparing the performance using different global inputs (DNN vs DNN and PD).}
     \label{fig: 4b QCD ROC no weights}
 \end{figure}
 
 \begin{figure}
     \centering
     \includegraphics[width=0.7\linewidth]{Images/7.S:B/Classification outputs/4b QCD dnn.png}
-    \caption{SPANet output for the classification training using the 4b QCD configuration and DNN as input variables. It shows the probability assigned to the signal events and the probability assigned to the background events by our network. We can see the difference in the distribution when applying the weights}
+    \caption{SPANet output for the classification training using the 4b QCD configuration and DNN as input variables. The probability assigned to the signal events and to the background events are shown. Significant differences are observed for the background SPANET output scores when applying the weights.}
     \label{fig: SPANet output S/B 4b QCD}
 \end{figure}
 
@@ -343,8 +293,7 @@ Finally, we show the non weighted ROC for the 4b-QCD configuration. We observe i
 
 \subsection{Assessing the variability of the trainings} \label{subsection: var of training S/B}
 
-Unlike in section \ref{subsection: pairing variability}, here we look to asses the variability of the performance seen in the ROCs instead of in the validation accuracy. Nonetheless, as was done in section \ref{subsection: pairing variability}, we performed different trainings using the same configuration but fixing the seed to randomly initialize the weights. In Figures \ref{fig: 4b QCD v ariability}, \ref{fig: 2b QCD v ariability}, \ref{fig: 2b data v ariability} we can see the results of these trainings. A summary of the AUC values seen in these figures can be found in Table \ref{table: Spread of the trainings}. From looking at these values, one finds that the variability using 2b-QCD and 2b-data configurations is acceptable, as it is for 4b-QCD using DNN variables as inputs. Nevertheless, for 4b-QCD using DNN and PD as inputs we find a large uncertainty. This wide variability seen in Figure \ref{fig: 4b QCD DNN PD}, can then explain the surprising results we pointed out in section \ref{subsection: results on the trainings}. Therefore we can't state that our performance using 4b-QCD with DNN and PD improves our performance with respect to only DNN variables. We can conclude that they are the same within the variability. 
-
+Unlike in Section \ref{subsection: pairing variability}, in the current Section, we assess the variability of the performance by using ROC curves as a figure of merits instead of validation accuracies. However, similarly to the studies performed in Section \ref{subsection: pairing variability}, different trainings using the same configuration but fixing eleven different seeds to randomly initialize the weights are performed. Figures \ref{fig: 4b QCD v ariability}, \ref{fig: 2b QCD v ariability}, \ref{fig: 2b data v ariability} show the results of these trainings. A summary of the AUC values observed in these Figures is reported in Table \ref{table: Spread of the trainings}. It is observed that the variability using 2b-QCD and 2b-data configurations is less than 0.02, as it is for 4b-QCD using DNN variables as inputs. Nevertheless, for 4b-QCD using DNN and PD as inputs we find a large variability. This large variability seen in Figure \ref{fig: 4b QCD DNN PD}, explains the features regarding the performance comparisons discussed in Section \ref{subsection: results on the trainings}. Therefore, we conclude that the SPANET performance using 4b QCD with DNN and PD variables is the same within the variability range of the training with respect to the SPANET training only using DNN variables.
 % ases tghe variability by looking at the AUCs (before: first thing)
 
 \begin{figure}[hbt]
@@ -352,16 +301,16 @@ Unlike in section \ref{subsection: pairing variability}, here we look to asses t
 \begin{subfigure}{.5\textwidth}
   \centering
   \includegraphics[width=1.1\linewidth]{Images/7.S_B/Variability/4b QCD DNN.png}
-  \caption{DNN as global input}
+  \caption{DNN as global inputs.}
   \label{fig: 4b QCD DNN}
 \end{subfigure}%
 \begin{subfigure}{.5\textwidth}
   \centering
   \includegraphics[width=1.1\linewidth]{Images/7.S_B/Variability/4b QCD prob diff and DNN.png}
-  \caption{DNN and PD as global inputs}
+  \caption{DNN and PD as global inputs.}
   \label{fig: 4b QCD DNN PD}
 \end{subfigure}
-\caption{4b-QCD variability of the ROCs for the different inputs presented in Table \ref{table: S/B trainings}}
+\caption{ROC curves produced by fixing eleven different seeds using 4b-QCD and as inputs either DNN variables or DNN and PD variables. The AUC of each ROC curve are also reported in these Figures. The number next to the value of the AUC corresponds to the value of the seed fixed for the training.}
 \label{fig: 4b QCD v ariability}
 \end{figure}
 
@@ -379,7 +328,7 @@ Unlike in section \ref{subsection: pairing variability}, here we look to asses t
   \caption{DNN and PD as global inputs}
   \label{fig: 2b QCD DNN PD}
 \end{subfigure}
-\caption{2b-QCD variability of the ROCs for the different inputs presented in Table \ref{table: S/B trainings}}
+\caption{ROC curves produced by fixing eleven different seeds using 2b-QCD and as inputs either DNN variables or DNN and PD variables. The AUC of each ROC curve are also reported in these Figures. The number next to the value of the AUC corresponds to the value of the seed fixed for the training.}
 \label{fig: 2b QCD v ariability}
 \end{figure}
 
@@ -397,7 +346,7 @@ Unlike in section \ref{subsection: pairing variability}, here we look to asses t
   \caption{DNN and PD as global inputs}
   \label{fig: 2b data DNN PD}
 \end{subfigure}
-\caption{2b-data variability of the ROCs for the different inputs presented in Table \ref{table: S/B trainings}}
+\caption{ROC curves produced by fixing eleven different seeds using 2b-data and as inputs either DNN variables or DNN and PD variables. The AUC of each ROC curve is also reported in these Figures. The number next to the value of the AUC corresponds to the value of the seed fixed for the training.}
 \label{fig: 2b data v ariability}
 \end{figure}
 
@@ -423,12 +372,12 @@ Unlike in section \ref{subsection: pairing variability}, here we look to asses t
  2b-data (DNN and PD) & 0.980 & 0.972 & $\sim$0.008  \\
  \hline
 \end{tabular}
-\caption{Summary of the AUC values observed in Figures \ref{fig: 4b QCD v ariability}, \ref{fig: 2b QCD v ariability}, \ref{fig: 2b data v ariability} for the variability of the training presented in Table \ref{table: S/B trainings}}
+\caption{Maximal and minimal AUC values observed in Figures \ref{fig: 4b QCD v ariability}, \ref{fig: 2b QCD v ariability}, \ref{fig: 2b data v ariability} and  variability of the 4b-QCD, 2b-QCD and 2b data configurations.}
 \label{table: Spread of the trainings}
 \end{table}
 
 
-Due to some limitations in our available resources, we could not compute the variability for 2b data full statistics, nevertheless, we observed that the value of the AUC was not affected (within the variability of the training) by the difference in statistics, as is shown in Table \ref{table: 2b-data AUC r vs f}.
+Due to some limitations in our available resources, we could not compute the variability for 2b data full statistics, nevertheless, we observed that the value of the AUC was not affected (within the variability of the training) by the difference in statistics, as shown in Table \ref{table: 2b-data AUC r vs f}.
 
 
 \begin{table}[hbt]
@@ -448,73 +397,72 @@ Due to some limitations in our available resources, we could not compute the var
  2b-data full statistics (DNN and PD) & 0.977  \\
 \hline
 \end{tabular}
-\caption{Results of the AUC obtained after training SPANet on 2b-data full and reduced statistics}
+\caption{Results of the AUC obtained after training SPANet on 2b-data full and reduced statistics.}
 \label{table: 2b-data AUC r vs f}
 \end{table}
 
 
-\subsection{4b data extrapolation} \label{subsection:4b data extrapolation inclusivce}
+\subsection{Inference of the 4b data ROC} \label{subsection:4b data extrapolation inclusivce}
 
-In the previous sections we presented the necessary results to compute the 4b data extrapolation as was explained in section \ref{subsection: sample dep}. Since we don't have an immediate solution to reduce the variability on the 4b-QCD trainings, as a first approximation for the extrapolation we will compute the b-tag ratio in Eq.(\ref{eq: extrapolation}) (\textcolor{BlueGreen}{blue}) for the 11 seeds and see where the value from the AN stands within this variability.
+In the previous Sections the necessary inputs to infer the 4b data AUC and ROC curve using Eq.(\ref{eq: extrapolation}) are presented. Since there is not an immediate solution to reduce the variability on the 4b-QCD trainings, as a first approximation for the inference, the b-tag ratio in Eq.(\ref{eq: extrapolation}) is computed for the 11 seeds and check where the value from the AN used for the comparison lies within this variability. Since the variability for 2b-QCD and 2b-data is small ($\sim 0.01$), it has been decided to ignore this variability to infer the 4b-data results.
 
-In Figures \ref{fig: 4b data extrapolation DNN} and \ref{fig: 4b data extrapolation DNN PD} we present the results of the extrapolation and the comparison to the ROC in the AN. The values of the AUC reported in these plots are the extrapolated values computed using Eq.(\ref{eq: extrapolation}). We only show in these plots the best and the worst performing ROCs of our training to see with more clarity where the AN ROC stands within the variability of our training. By looking at these figures we can conclude that using the PD variable does not improve our performance. For both cases, the results from the AN are within the variability of our trainings. 
+Figures \ref{fig: 4b data extrapolation DNN} and \ref{fig: 4b data extrapolation DNN PD} show the results of the ROC inferred for 4b data and the comparison to the ROC in the AN. The values of the AUC reported in these plots are the extrapolated values computed using Eq.(\ref{eq: extrapolation}). These plots show the best and the worst performing ROC curves in terms of variability of the SPANet training to compare with more clarity where the AN ROC, the benchmark ROC the comparison is done against, lies within the variability of these trainings. We conclude that using the PD variable does not improve the SPANet performance. For both cases, the results from the AN are within the variability of our trainings. 
 
 \begin{figure}[hbt]
     \centering
     \includegraphics[width=0.7\linewidth]{Images/7.S:B/Extrapolation/4b data dnn.png}
-    \caption{Extrapolation to 4b data using the training with 2b data full statics, 2b data reduced statistics, 2b QCD reduced statistics and 4b-QCD with DNN variables as inputs. The FPR is computed using Eq.(\ref{eq: extrapolation}) and TPR is the one from 2b data full statistics. The AUCs showed in this figure are the extrapolated using Eq.(\ref{eq: extrapolation})}
+    \caption{ROC curve inferred for 4b-data, with DNN as inputs, using Eq.(\ref{eq: extrapolation}) to compute the FPR and the TPR is taken from 2b data full statistics ROC curve. The AUCs showed in this Figure are the inferred using Eq.(\ref{eq: extrapolation})}
     \label{fig: 4b data extrapolation DNN}
 \end{figure}
 
 \begin{figure}[hbt]
     \centering
     \includegraphics[width=0.7\linewidth]{Images/7.S:B/Extrapolation/4b data dnn proba.png}
-    \caption{Extrapolation to 4b data using the training with 2b data full statics, 2b data reduced statistics, 2b QCD reduced statistics and 4b-QCD with DNN and PD variables as inputs. The FPR is computed using Eq.(\ref{eq: extrapolation}) and TPR is the one from 2b data full statistics. The AUCs showed in this figure are the extrapolated using Eq.(\ref{eq: extrapolation}}
+    \caption{ROC curve inferred for 4b-data, with DNN and PD as inputs, using Eq.(\ref{eq: extrapolation}) to compute the FPR and the TPR is taken from 2b data full statistics ROC curve. The AUCs showed in this Figure are the inferred using Eq.(\ref{eq: extrapolation}).}
     \label{fig: 4b data extrapolation DNN PD}
 \end{figure}
 
-(Do I also compare here best vs best and worse vs worse? As done in the last section for the SR)
 
 \clearpage
 
 \subsection{Signal region}
 
-So far we have trained our models inclusively and we have been comparing them to the results in the AN. Nevertheless, the results in the AN have been obtained by training the DNN with samples considering only events in the SR (defined in section \ref{section: HH4b}). We will start by evaluating our current inclusive models presented in the previous section in samples with events in the SR and then trained and evaluated in the SR samples.
+So far the training of the SPANet models has been done inclusively in the analysis phase-space and the results have been compared to the results in the AN. Nevertheless, the results in the AN have been obtained by training the DNN with samples considering only events in the analysis SR (defined in Section \ref{section: HH4b}). Therefore, the inclusive SPANET model will be first evaluated in the SR, and afterwards dedicated training and evaluations of the SPANET model will be performed in the SR.
 
 
-\subsubsection{Evaluation on SR}
+\subsubsection{Evaluation of the SPANET model in the SR}
 
-Before we could perform our trainings with a SR sample, we started by evaluating our inclusive trainings on SR test samples. We started by comparing the evaluation of our training in 2b-data full statistics inclusive or 2b-data full statistics in the SR. The results are shown in Figure \ref{fig: 2b data comparison ev on SR}. We can see from this figure that for the training using DNN and PD as global variables, the performance is the same on SR or inclusively (within the variability). Nevertheless, for 2b-data using only DNN as inputs we observe a significant loss in performance.
+The evaluation of the inclusive trainings on SR samples was tested. Figure \ref{fig: 2b data comparison ev on SR} shows the comparison between the evaluation of the SPANet 2b-data full statistics inclusive training on the 2b-data full statistics sample in the SR and on the 2b-data full statistics inclusive sample. It is to observe that the training using DNN and PD as global variables has the same performance when evaluating on SR or inclusively within the variability. Nevertheless, for 2b-data using only DNN as inputs a significant loss in performance is observed.
 
 \begin{figure}[hbt]
     \centering
     \includegraphics[width=0.7\linewidth]{Images/7.S:B/SR stats/2b-data comp.png}
-    \caption{Comparison of the models trained inclusively with the 2b-data configuration evaluated inclusively and in the SR. The samples named 2b data SR are the ones containing only events in the SR}
+    \caption{ROC curves of the SPANet 2b-data full statistics inclusive trainings using DNN or PD and DNN as input variables evaluated inclusively and in the SR. The samples named 2b data SR are the ones containing only events in the SR.}
     \label{fig: 2b data comparison ev on SR}
 \end{figure}
 
-Moreover in Figures \ref{fig: ev on SR dnn pd} and \ref{fig: ev on SR dnn pd}, we show the extrapolation to the 4b-data when evaluating on SR samples. Nevertheless, we can see that our performance worsens significantly, therefore we conclude that in order to have better performance we need to perform the trainings and evaluations on SR samples as will be shown in the next section.
+Moreover Figures \ref{fig: ev on SR dnn} and \ref{fig: ev on SR dnn pd}, show the the ROC curve inferred for 4b-data when evaluating on SR samples. It is observed that the SPANet classification performance worsens significantly due to the fact that the SPANet training is performed inclusively and applied in the SR. Therefore, a dedicated training in the SR will be discussed in the next Section.
 
 \begin{figure}[hbt]
     \centering
     \includegraphics[width=0.7\linewidth]{Images/7.S:B/SR stats/4b data extrapol ev on SR dnn.png}
-    \caption{Extrapolation to 4b data using the inclusive trainings with 2b data full statics, 2b data reduced statistics, 2b QCD reduced statistics and 4b-QCD with DNN variables as inputs but evaluated on SR. The FPR is computed using Eq.(\ref{eq: extrapolation}) and TPR is the one from 2b data full statistics. The AUCs showed in this figure are the extrapolated using Eq.(\ref{eq: extrapolation})}
-    \label{fig: ev on SR dnn pd}
+    \caption{ROC curve inferred for 4b-data using the inclusive trainings with DNN as inputs to compute FPR using Eq.(\ref{eq: extrapolation}). The TPR values are taken from the 2b data full statistics ROC curve. The AUCs showed in this Figure are inferred using Eq.(\ref{eq: extrapolation}).}
+    \label{fig: ev on SR dnn}
 \end{figure}
 
 \begin{figure}[hbt]
     \centering
     \includegraphics[width=0.7\linewidth]{Images/7.S:B/SR stats/4b data extrapolation dnn proba ev on sr.png}
-    \caption{Extrapolation to 4b data using the inclusive trainings with 2b data full statics, 2b data reduced statistics, 2b QCD reduced statistics and 4b-QCD with DNN and PD variables as inputs but evaluated on SR. The FPR is computed using Eq.(\ref{eq: extrapolation}) and TPR is the one from 2b data full statistics. The AUCs showed in this figure are the extrapolated using Eq.(\ref{eq: extrapolation})}
+    \caption{ROC curve inferred for 4b-data using the inclusive trainings with DNN and PD as inputs to compute FPR using Eq.(\ref{eq: extrapolation}). The TPR values are taken from the 2b data full statistics ROC curve. The AUCs showed in this Figure are inferred using Eq.(\ref{eq: extrapolation}).}
     \label{fig: ev on SR dnn pd}
 \end{figure}
 
 \clearpage
 
 
-\subsubsection{Training and evaluation on SR}
+\subsubsection{Training and evaluation on SR} \label{subsubsection: train and eev on SR}
 
-When performing the trainings in the SR it is important to point out that, as can be seen in Table \ref{table: SR efficiency}, the SR efficiency is very little for the background, hence, we are left with very little statistics.
+When performing the trainings in the SR it is to point out that, as shown in Table \ref{table: SR efficiency}, the SR selection efficiency is low for the background, hence, we are left with very small background statistics.
 
 \begin{table}[hbt]
 \centering
@@ -537,27 +485,27 @@ When performing the trainings in the SR it is important to point out that, as ca
  2b-data & 5.9M & 470k & 8\% \\
  \hline
 \end{tabular}
-\caption{Signal region efficiency for the different configurations used for the SPANet trainings}
+\caption{Signal region efficiency for the different configurations used for the SPANet trainings.}
 \label{table: SR efficiency}
 \end{table}
 
-We show in Figure \ref{fig: Assigned prob 4b QCD SR} the probability assigned by SPANet after performing a training with the 4b-QCD configuration using only events in the signal region, that we will refer to as the 4b-QCD-SR configuration. In this case we used the DNN and PD variables as inputs. As we can observe in this figure, when considering the weighted events, we have very significant fluctuations of the background due to the lack of statistics. This is then reflected on the ROC of this distribution as can be seen in Figure \ref{fig: ROC of the assignment proba SR}.  The same feature is observed when using only DNN as input variables.
+Figure \ref{fig: Assigned prob 4b QCD SR} shows the probability assigned by SPANet after performing a training with the 4b-QCD configuration using only events in the signal region, which will be referred to as the 4b-QCD-SR configuration. In this case, DNN and PD variables are used as inputs. When considering the weighted events, significant fluctuations in the background are observed due to the lack of statistics. This is reflected in the ROC curve of this distribution as observed in Figure \ref{fig: ROC of the assignment proba SR}.  The same feature is observed when using only DNN as input variables.
 
 \begin{figure}[hbt]
     \centering
     \includegraphics[width=0.7\linewidth]{Images/7.S:B/SR stats/4b stats SR class output.png}
-    \caption{Probability assigned by SPANet as classifier of the signal events in the SR as well as the 4b QCD background events in the signal region. For this training we used DNN and PD variables as global inputs. Due to the lack of statistics in the background, we observe big fluctuations in the weighted distribution}
+    \caption{Probability assigned by SPANet as a classifier of the signal events in the SR as well as the 4b QCD background events in the signal region. For this training we used DNN and PD variables as global inputs. Due to the lack of statistics in the background, we observe large fluctuations in the background weighted distribution.}
     \label{fig: Assigned prob 4b QCD SR}
 \end{figure}
 
 \begin{figure}[hbt]
     \centering
     \includegraphics[width=0.7\linewidth]{Images/7.S:B/SR stats/ROC 4b QCD SR dnn proba.png}
-    \caption{ROC of the assignment probability distribution obtained after a training and evaluation on SR samples shown in Figure \ref{fig: Assigned prob 4b QCD SR}}
+    \caption{ROC of the assignment probability distribution obtained after a training and evaluation on SR samples shown in Figure \ref{fig: Assigned prob 4b QCD SR}.}
     \label{fig: ROC of the assignment proba SR}
 \end{figure}
 
-Since in section \ref{subsection: var of training S/B}, we observed a large variability for the 4b-QCD configuration, we decided to test the variability of the the 4b-QCD-SR configuration trainings. We show the outcome of these trainings in Figure \ref{fig: 4b QCD SR variability} and in Table \ref{table: Spread of 4b QCD SR} we summarize the results. 
+In Section \ref{subsection: var of training S/B} a large variability is observed for the 4b-QCD configuration, therefore the variability of trainings using the 4b-QCD-SR configuration is also tested. The outcome of these trainings is shown in Figure \ref{fig: 4b QCD SR variability} and in Table \ref{table: Spread of 4b QCD SR} the results are summarized. 
 
 \begin{figure}[hbt]
 \centering
@@ -573,7 +521,7 @@ Since in section \ref{subsection: var of training S/B}, we observed a large vari
   \caption{DNN and PD as global inputs}
   \label{fig: 4b QCD SR DNN PD}
 \end{subfigure}
-\caption{4b-QCD SR variability for the different inputs presented in Table \ref{table: S/B trainings}}
+\caption{ROC curves produced by fixing eleven different seeds using 4b-QCD-SR and as inputs either DNN variables or DNN and PD variables. The AUC of each ROC curve are also reported in these Figures. The number next to the value of the AUC corresponds to the value of the seed fixed for the training.}
 \label{fig: 4b QCD SR variability}
 \end{figure}
 
@@ -588,28 +536,33 @@ Since in section \ref{subsection: var of training S/B}, we observed a large vari
  4b-QCD-SR (DNN and PD) & 0.941 & 0.909 & $\sim$0.033 \\
  \hline
 \end{tabular}
-\caption{Summary of the variability of the ROC and AUC values of the training for 4b-QCD SR training}
+\caption{Variability of the ROC and AUC values of the training for 4b-QCD SR training.}
 \label{table: Spread of 4b QCD SR}
 \end{table}
 
-As can be seen in Table \ref{table: Spread of 4b QCD SR}, we have an even higher variability than the one presented in section \ref{subsection: var of training S/B}, which can be explained by the lack of statistics of the background. Therefore, for the extrapolation for 4b-data in SR, we will do the same as in section \ref{subsection: var of training S/B}, and compute the b-tag ratio in Eq.(\ref{eq: extrapolation}) for the 11 seeds and see where the value from the AN
-stands within this variability. The results are shown in Figures \ref{fig: 4b QCD SR DNN PD roc} and \ref{fig: 4b QCD SR DNN roc}. IN the SR we can conclude that adding the PD variable adds more variability to the trainings as previously noticed, however, adding this variable in the SR allows us to significantly improve our performance.
+As shown in Table \ref{table: Spread of 4b QCD SR}, a higher variability is observed for the 4b-QCD-SR trainings than the one presented in Section \ref{subsection: var of training S/B}, which can be explained by the lack of statistics of the background. Therefore, to infer the ROC curve in the 4b-data, the same procedure explained in Section \ref{subsection: var of training S/B} is used. The b-tag ratio in Eq.(\ref{eq: extrapolation}) for the 11 seeds is computed and it is checked where the value from the AN
+lies within this variability. The results are shown in Figures \ref{fig: 4b QCD SR DNN PD roc} and \ref{fig: 4b QCD SR DNN roc}. It is observed that although adding the PD variable as input increases the variability, it significantly improves the performance of the classification.
 
 \begin{figure}[hbt]
     \centering
     \includegraphics[width=0.7\linewidth]{Images/7.S:B/SR stats/4b data DNN + pb sr.png}
-    \caption{4b-data in SR extrapolated ROC using the 4b-QCD-SR, 2b-data-SR full statistics, 2b-data-SR reduced statistics and 2b-QCD-SR configurations using DNN and PD as inputs. Here the AUC corresponds to the extrapolated AUC computed using Eq.(\ref{eq: extrapolation}).  Only the best and the worst performing trainings are shown in this figure to see more clearly where does the AN ROC stand within the variability of our training}
+    \caption{ROC curve inferred for 4b-data in SR, with DNN, and PD as inputs, using Eq.(\ref{eq: extrapolation}) to compute the FPR and the TPR is taken from 2b data full statistics in SR ROC curve. The AUCs shown in this Figure are inferred using Eq.(\ref{eq: extrapolation}). Only the best and the worst performing trainings are shown in this figure to clearly show the performance bands inside which the AN ROC lies for better readability and comparison.}    
     \label{fig: 4b QCD SR DNN PD roc}
 \end{figure}
 
 \begin{figure}[hbt]
     \centering
     \includegraphics[width=0.7\linewidth]{Images/7.S:B/SR stats/4b data DNN.png}
-    \caption{4b-data in SR extrapolated ROC using the 4b-QCD-SR, 2b-data-SR full statistics, 2b-data-SR reduced statistics and 2b-QCD-SR configurations using DNN as inputs. Here the AUC corresponds to the extrapolated AUC computed using Eq.(\ref{eq: extrapolation}).  Only the best and the worst performing trainings are shown in this figure to see more clearly where does the AN ROC stand within the variability of our training}
+    \caption{ROC curve inferred for 4b-data in SR, with DNN, and PD as inputs, using Eq.(\ref{eq: extrapolation}) to compute the FPR and the TPR is taken from 2b data full statistics in SR ROC curve. The AUCs shown in this Figure are inferred using Eq.(\ref{eq: extrapolation}). Only the best and the worst performing trainings are shown in this figure to clearly show the performance bands inside which the AN ROC lies for better readability and comparison.}
     \label{fig: 4b QCD SR DNN roc}
 \end{figure}
 
-We conclude by looking at Figures \ref{fig: highest comp} and \ref{fig: lowest comp} seeing the summarized results in Table \ref{table: highest/ lowest SR 4b data}, that by training our model using the DNN and PD as global inputs, 0.015 is the smallest gain that we get from this method, as here we only tested the variability with 11 seeds. Moreover, by using this training, our worse performance does not outperform the DNN used in Run 2, but is still better than the one using only DNN variables as global inputs. For the next steps, in order to avoid the lack of statistics and reduce the variability, we propose to oversample the 4b-QCD-SR sample used for the training.
+We conclude (as shown in Table \ref{table: highest/ lowest SR 4b data}) that by training the SPANet model using the DNN and PD as global inputs, the smallest gain that we extract from this method is given by a difference of 0.015 in the AUC. Moreover, by using this training, the SPANET classification worse performance does not outperform the DNN used in Run 3, but is still better than the one using only DNN variables as global inputs. 
+
+Comparing Figures \ref{fig: 4b QCD SR DNN PD roc} and \ref{fig: 4b QCD SR DNN roc} as a function of the TPR shows that the performance of the DNN for Run 3 is outperformed by the novel SPANet training up to 85\% signal efficiency. After this threshold on the signal efficiency at 85\%, the probability distribution given by SPANet is dominated by the background, therefore the lack of statistics plays a significant role.
+
+
+In order to further improve the SPANet classification performance in the SR, it is proposed to oversample the 4b-QCD-SR sample used for the training. In this case, the oversampling consists of randomly shuffling the events in the 4b-QCD-SR sample and repeatedly concatenating them until the number of events is equal to the one in the 2b-data full statistics sample ($\sim$ 5M events).
 
 \begin{table}[hbt]
 \centering
@@ -622,23 +575,20 @@ We conclude by looking at Figures \ref{fig: highest comp} and \ref{fig: lowest c
  4b-data-SR (DNN and PD) & 0.950 & 0.918 \\
  \hline
 \end{tabular}
-\caption{Comparison of the highest and lowest extrapolated AUC values for 4b-data using Eq.(\ref{eq: extrapolation}) to compute them. Here wee compare the difference given by the inputs in the training.}
+\caption{Comparison of the highest and lowest extrapolated AUC values for 4b-data using Eq.(\ref{eq: extrapolation}) to compute them.}
 \label{table: highest/ lowest SR 4b data}
 \end{table}
 
 \begin{figure}[hbt]
     \centering
     \includegraphics[width=0.7\linewidth]{Images/7.S:B/SR stats/HIghest AUC ROC vs Highest AUC vs AN.png}
-    \caption{Comparison of the best performing 4b-data-SR extrapolated ROC when using either DNN as input variables or DNN as PD variables. The AUCs showed in this figure are the extrapolated using Eq.(\ref{eq: extrapolation}}
+    \caption{Comparison of the best performing inferred 4b-data-SR ROC curves when using either DNN as input variables or DNN as PD variables. The AUCs shown in this Figure are inferred using Eq.(\ref{eq: extrapolation}). This is the smallest possible gain for the best SPANET training configuration which shows that the benchmark results of the AN are outperformed by the novel SPANET training.}
     \label{fig: highest comp}
 \end{figure}
 
 \begin{figure}[hbt]
     \centering
     \includegraphics[width=0.7\linewidth]{Images/7.S:B/SR stats/lowest comp 4b data.png}
-    \caption{Comparison of the worst performing 4b-data-SR extrapolated ROC when using either DNN as input variables or DNN as PD variables. The AUCs showed in this figure are the extrapolated using Eq.(\ref{eq: extrapolation})}
+    \caption{Comparison of the worst performing inferred 4b-data-SR ROC curve when using either DNN as input variables or DNN as PD variables. The AUCs showed in this Figure are the inferred using Eq.(\ref{eq: extrapolation}).}
     \label{fig: lowest comp}
 \end{figure}
-
-
-Compare as a function of TPR saying that we outperform up tp 0.85 signal eff. after dominated by bckg, mention again the pb of stats . oversampling will play an important role
