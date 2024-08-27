@@ -7,14 +7,14 @@ In order to study a novel method for pairing and classification using ML, the us
 
 \subsection{Introduction to Machine Learning}
 
-Machine Learning (ML) is a subfield of artificial intelligence that gives computer systems the ability to learn from data using statistical techniques. There are multiple applications to ML, like image processing, DNA sequence classification, speech recognition, etc. In particular, for experimental particle physics, ML can be used for particle identification, signal and background discrimination, etc. There are several types of machine learning \cite{introml}:
+Machine Learning (ML) is a subfield of artificial intelligence that gives computer systems the ability to learn from data using statistical techniques. There are multiple applications to ML, like image processing, DNA sequence classification, speech recognition, etc. In particular, for experimental particle physics, ML can be used for particle identification, signal and background discrimination, etc. There are several types of machine learning \cite{neutrinoslides}, \cite{Mauro}:
 \begin{itemize}
     \item Supervised learning: a labelled dataset is given to the algorithm for the training and the correct results are known.
    \item Unsupervised learning: an unlabelled data is given to the algorithm for the training and the algorithm detects the characteristics of the data and defines classes (for instance, this is commonly used to identify meaningful patterns in 2D data).
    \item Reinforcement learning: the network is trained to learn to make decisions through trial and error by receiving rewards or penalties for its actions (for instance this is commonly used in robotics).
 \end{itemize}
 
-\noindent Within supervised learning, two types of problems exist:
+\noindent Within supervised learning, two types of problems exist \cite{neutrinoslides}, \cite{TesiMatteo}:
    \begin{itemize}
        \item [-] Regression problems: The input data samples are assigned to a continuous value. For instance, regression can be used to find the energy of a particle given some kinematical information about the event. Therefore, this type of problems aims to find a function that optimally describes the relationship between the input data and the continuous output. Some of the most used techniques are linear regression, which tries to fit a straight line to data, and polynomial regression, which tries to fit a curve of a higher degree order to the data.
        \item [-] Classification problems: The input data samples are assigned to a discrete number of categories. For instance, signal and background. This type of problem aims to find a function that separates the different classes in the feature space. Some of the most used techniques for classification are neural networks or decision trees.
@@ -28,12 +28,12 @@ The simplest neural network model is the perceptron \cite{perceptrons}, inspired
 
 \begin{figure}[hbt]
     \centering
-    \includegraphics[width=0.8\linewidth]{Images/5.SPANet/one neuron.pdf}
+    \includegraphics[width=0.8\linewidth]{Images/5.SPANet/NN diagram 2.pdf}
     \caption{Fundamental unit of a Neural Network. The inputs are associated with a weight, that the network learns to optimize in the training. The weighted sum of the inputs and the weights constitutes the input to the activation function. The outcome of the activation function gives the prediction by the network.}
     \label{fig: neuron}
 \end{figure}
 
-Figure \ref{fig: neuron} shows the basic structure of the perceptron. Each input $x^i$ is characterized by a weight $w^i$ that connects the inputs to the artificial neuron. The weighted average is computed and is used as input of the activation function $\sigma$. The output of the network $\hat{y}$ is then given by:
+Figure \ref{fig: neuron} shows the basic structure of the perceptron. Each input $x^i$ is characterized by a weight $w^i$ that connects the inputs to the artificial neuron. The weighted average is computed and is used as input of the activation function $\sigma$. The output of the network $\hat{y}$ is then given by \cite{neutrinoslides}:
 \begin{equation}
     \hat{y}=\sigma\bigg(\sum_{i=0}^n w^i x^i\bigg)
     \label{eq: output network}
@@ -58,27 +58,41 @@ The activation function transforms the weighted average input from the node into
         \end{equation}
 \end{itemize}
 
-\begin{figure}[hbt]
+
+\begin{figure}[h]
     \centering
-    \includegraphics[width=0.7\linewidth]{Images/5.SPANet/Activation function 2.pdf}
-    \caption{Examples of commonly used activation functions in machine learning. These plots show the sigmoid, softmax and ReLu functions \cite{figactivf}.}
+    \begin{minipage}[b]{0.3\textwidth}
+        \centering
+        \includegraphics[width=1.2\linewidth]{Images/5.SPANet/Sigmoid.pdf} 
+    \end{minipage}
+     \hspace{0.01\textwidth}
+    \begin{minipage}[b]{0.3\textwidth}
+        \centering
+        \includegraphics[width=1.2\linewidth]{Images/5.SPANet/ReLU.pdf} 
+    \end{minipage}
+     \hspace{0.01\textwidth}
+    \begin{minipage}[b]{0.3\textwidth}
+        \centering
+        \includegraphics[width=1.2\linewidth]{Images/5.SPANet/Softmax.pdf}
+    \end{minipage}
+    \caption{Examples of commonly used activation functions in machine learning. These plots show the sigmoid, ReLU and softmax functions.}
     \label{fig: activation function}
 \end{figure}
 
 \subsubsection{Loss function}
 
-The prediction of the neuron is computed using Eq.(\ref{eq: output network}) and the error of this output is computed using the loss function. The loss function $L$  allows to evaluate how good the prediction of the network is \cite{loss_function}. To optimize the model efficiently, depending on the task (classification, regression, etc.) different loss functions are required. Here two of the most commonly used loss functions are presented:
+The prediction of the neuron is computed using Eq.(\ref{eq: output network}) and the error of this output is computed using the loss function. The loss function $L$  allows to evaluate how good the prediction of the network is \cite{loss_function}. To optimize the model efficiently, depending on the task (classification, regression, etc.) different loss functions are required. Here two of the most commonly used loss functions are presented \cite{TesiMatteo}:
 
 \begin{itemize}
     \item Mean squared error (MSE): This loss function is typically used in regression problems. It is computed by taking the squared difference between the predictions by the network and the truth target values. This squared difference is averaged across the dataset.
-    \item Binary cross-entropy function: This loss function is typically used for binary classification tasks. This allows the measurement of the difference between the prediction $\hat{y}$ and the true binary label $y$. It can be computed as follows:
+    \item Binary cross-entropy function: This loss function is typically used for binary classification tasks. This allows the measurement of the difference between the prediction $\hat{y}$ and the true binary label $y$. It can be computed as follows \cite{neutrinoslides}:
     \begin{equation}
         L(\hat{y},y)=-(y \text{log}(\hat{y}) + (1-y)  \text{log}(1-\hat{y}))    \end{equation}
 \end{itemize} 
 
 \subsubsection{Training of the perceptron}
 
-Given a set of inputs $\{x\}_i$, the neural network aims to find the best set of weights $\{w\}_i$ that approximates the activation function $\sigma(x,w)=\hat{y}$, such that the predictions $\hat{y}$ are close to the target values $y$. The optimal values of the weights are found by training the network. For simplicity, the training of the perceptron, with only 1 neuron is presented, but this can be generalized to k neurons. The training of the perceptron consists of three steps:
+Given a set of inputs $\{x\}_i$, the neural network aims to find the best set of weights $\{w\}_i$ that approximates the activation function $\sigma(x,w)=\hat{y}$, such that the predictions $\hat{y}$ are close to the target values $y$. The optimal values of the weights are found by training the network. For simplicity, the training of the perceptron, with only 1 neuron is presented, but this can be generalized to k neurons. The training of the perceptron consists of three steps \cite{neutrinoslides}:
 
 \begin{itemize}
     \item[1.] Random initialization of the weights $w$
@@ -98,7 +112,7 @@ As mentioned, in this Section the training of neural networks is exemplified by 
 
 \subsubsection{Datasets used in ML}
 
-The datasets in the training need to be large enough to represent the target distribution used. Typically this dataset is split as follows:
+The datasets in the training need to be large enough to represent the target distribution used. Typically this dataset is split as follows \cite{neutrinoslides}:
 \begin{itemize}
     \item Train set: used for the forward and backward propagation
     \item Validation set: used during the training to check the training on a set that is statistically independent than the training set. After each batch, the model is evaluated on this dataset and therefore the performance can be evaluated.
@@ -110,7 +124,7 @@ The validation step during the training allows for the prevention of under or ov
 %Figure \textbf{bla} shows an example of underfitting, correctly fitting, and overfitting.
 
 
-The validation accuracy is defined as the percentage of the number of correctly predicted events over the total number of events. When the validation accuracy as a function of the training epochs reaches a stable plateau the training needs to be stopped to avoid overfitting. The validation accuracy and loss give complementary information. If the validation accuracy is high, the validation loss will be small. Figure \ref{fig: validation} shows an example of trainings done with SPANet (discussed in Section \ref{subsection: SPANet}) presented in Section \ref{section: improving}, where the validation accuracy tends to one, thus is high while the validation loss tends to zero.
+The validation accuracy is defined as the percentage of the number of correctly predicted events over the total number of events. When the validation accuracy as a function of the training epochs reaches a stable plateau the training needs to be stopped to avoid overfitting. The validation accuracy and loss give complementary information. If the validation accuracy is high, the validation loss will be small. Figure \ref{fig: validation} shows an example of trainings performed with SPANet (discussed in Section \ref{subsection: SPANet}) presented in Section \ref{section: improving}, where the validation accuracy tends to one, thus is high while the validation loss tends to zero.
 
 \begin{figure}[h!]
     \centering
@@ -127,7 +141,7 @@ The validation accuracy is defined as the percentage of the number of correctly 
         % \caption{\pt of the subleading Higgs.}
         % \label{fig: pt h2}
     \end{subfigure}
-    \caption{Example of the validation loss and the validation accuracy plots of trainings done with SPANet (Section \ref{subsection: SPANet}) presented in Section \ref{section: improving}.}
+    \caption{Example of the validation loss and the validation accuracy of trainings performed with SPANet (Section \ref{subsection: SPANet}) presented in Section \ref{section: improving}.}
     \label{fig: validation}
 \end{figure}
 
@@ -208,20 +222,20 @@ Although at generator-level all the quarks are expected to produce a jet, due fo
 
 \subsubsection{SPANet hyperparameters}
 
-The SPANet default hyperparameters are chosen using the Sherpa hyperparameter optimization library \cite{Sherpa} The AdamW optimizer \cite{AdamW} is used with $L_2$ regularisation on all parameter weights. The $L_2$ regularisation is a method to avoid overfitting as the complexity of the network increases. A regularisation term:
+The SPANet default hyperparameters are chosen using the Sherpa hyperparameter optimization library \cite{Sherpa} The AdamW optimizer \cite{AdamW} is used with $L_2$ regularisation on all parameter weights. The $L_2$ regularisation is a method to avoid overfitting as the complexity of the network increases. A regularisation term \cite{L2reg}:
 
 \begin{equation}
     \lambda \sum_i w^2_i
 \end{equation}
 
-\noindent is added to the loss function as a penalty term to be minimized. $w_i$ are the weights of the model, and $\lambda$ is a hyperparameter 
+\noindent is added to the loss function as a penalty term to be minimized. $w_i$ are the weights of the model, and $\lambda$ is a hyperparameter. \cite{L2reg}
 %(cite). 
-If $\lambda$ is set to zero,  the standard loss function is retrieved, if $\lambda$ is too large, it can add too much weight to the computation of the loss leading to underfitting.
+If $\lambda$ is set to zero,  the standard loss function is retrieved, if $\lambda$ is too large, it can add too much weight to the computation of the loss leading to underfitting.\cite{L2reg}
 
 
 \subsubsection{SPANet implementation}
 
-In practical terms, the implementation of SPANet can be found in  \url{https://github.com/Alexanders101/}. Figure \ref{fig: config} shows an example of a configuration file for the HH $\to$ 4b topology. The first section named \verb|INPUTS| lists the sequential inputs, in this case, the per-jet input variables, and the global inputs which have a single vector per event, in this case only the fifth jet present in the event. The global and sequential inputs will be described in more detail in Section \ref{section: improving}. In \verb|EVENTS|, the resonance particles of the HH $\to$ 4b topology are defined. Finally in \verb|PERMUTATIONS| we describe the particle and jet symmetries of the analysis (defined in Section \ref{subsection: SPANet}).
+The implementation of SPANet can be found in  \url{https://github.com/Alexanders101/}. Figure \ref{fig: config} shows an example of a configuration file for the HH $\to$ 4b topology. The first section named \verb|INPUTS| lists the sequential inputs, in this case, the per-jet input variables, and the global inputs which have a single vector per event, in this case only the fifth jet present in the event. The global and sequential inputs will be described in more detail in Section \ref{section: improving}. In \verb|EVENTS|, the resonance particles of the HH $\to$ 4b topology are defined. Finally in \verb|PERMUTATIONS| we describe the particle and jet symmetries of the analysis (defined in Section \ref{subsection: SPANet}).
 
 \begin{figure}[hbt]
     \centering
@@ -256,7 +270,7 @@ In practical terms, the implementation of SPANet can be found in  \url{https://g
         h2:
           - [ b3, b4 ]
 \end{verbatim}
-    \caption{Example of config file from the SPANet codebase for the HH $\to$ 4b topology shown in Figure \ref{fig: topology}.}
+    \caption{Example of config file from the SPANet codebase for the HH $\to$ 4b analysis.}
     \label{fig: config}
 \end{figure}
 

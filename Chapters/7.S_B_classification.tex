@@ -64,7 +64,10 @@ Hence, the formula for the event weights per event $i$ is modified as follows:
     \label{eq: event weight eq}
 \end{equation}
 
-In Eq.(\ref{eq: event weight eq}), the luminosity is a constant number that is the same for the signal and background. Therefore, the difference between signal and background events is given by the value of the cross-section, and by the generator-level weights. The latter are all equal up to a sign for the signal events but are different for each background event. In the following, these weights are used to take into account the MC production effects in the loss function, but not to equalize the number of events to data. Therefore, the luminosity will not be considered in the expression of event weights that will be used, as it is a constant that multiplies the weights for both signal and background. Additionally, it is to note that the production of the QCD background is divided into $H_T$ bins (explained in Section \ref{subsection: kinematic vars}). Therefore each $H_T$ bin has the same number of events and this would give us a flat \Ht spectrum of the background. But this is not physical, as a falling \Ht spectrum is expected. To take the kinematics of the QCD processes in \Ht bins into account in the event weights, the number of events is rescaled as a function of \Ht bins as follows:
+In Eq.(\ref{eq: event weight eq}), the luminosity and the cross-section are constant numbers. In the following, these weights are used to take into account the MC production effects in the loss function, but not to equalize the number of events to data. Therefore, the luminosity and the value of the cross-section will not be considered in the expression of event weights that will be used for the computation of the loss, as they are a constant that multiplies the weights. The difference between signal and background event weights is then given by the generator-level weights. The latter are all equal up to a sign for the signal events but are different for each background event. Nevertheless, it is to note that the production of the QCD background is divided into $H_T$ bins (reported in Table \ref{table: QCD  multijet}). Therefore each $H_T$ bin has the same number of events and this would result in a flat \Ht spectrum of the background. But this is not physical, as a falling \Ht spectrum is expected. To take the kinematics of the QCD processes in \Ht bins into account in the event weights, the number of events is rescaled as a function of \Ht bins by introducing the cross-section as follows:
+
+
+% In Eq.(\ref{eq: event weight eq}), the luminosity is a constant number. In the following, these weights are used to take into account the MC production effects in the loss function, but not to equalize the number of events to data. Therefore, the luminosity will not be considered in the expression of event weights that will be used, as it is a constant that multiplies the weights for both signal and background. Therefore, the difference between signal and background event weights is given by the value of the cross-section, and by the generator-level weights. The latter are all equal up to a sign for the signal events but are different for each background event. Additionally, it is to note that the production of the QCD background is divided into $H_T$ bins (explained in Section \ref{subsection: kinematic vars}). Therefore each $H_T$ bin has the same number of events and this would give us a flat \Ht spectrum of the background. But this is not physical, as a falling \Ht spectrum is expected. To take the kinematics of the QCD processes in \Ht bins into account in the event weights, the number of events is rescaled as a function of \Ht bins as follows:
 
 \begin{equation}
 	\text{event weights}^i_j =\frac{w_g^i}{\sum_j w_g^j} \times \frac{\sigma^j}{\sum_{j\in S,B}(\sigma^j)}
@@ -98,18 +101,18 @@ It is observed that for signal events, the event weights are much larger than fo
 
 \subsubsection{Class weights}
 
-To account for the imbalance of the weights, class weights are introduced and defined as follows (cite):
+To account for the imbalance of the weights, class weights are introduced and defined as follows \cite{classbalance}:
 
 \begin{equation}
-    \text{class weights}^{S,B} = (1- \beta)/ (1- \beta^{(\sum_{i,j\in S,B}\text{event weights}^i_j)})
+    \text{class weights}^{S,B} = (1- \beta)/ (1- \beta^{(\sum_{(i,j)\in S,B}\text{event weights}^i_j)})
     \label{Eq:class weights}
 \end{equation}
 
-\noindent with $\beta= 1 - (1/\sum (\text{event weights}))$.
+\noindent with $\beta= 1 - (1/\sum (\text{event weights}))$ and where $\sum_{i,j\in S,B}\text{event weights}^i_j$ is at the exponent.
 
 \vspace{0.1cm}
 
-Eq.(\ref{Eq:class weights}) takes into account the number of events in the sample, as we are summing over all the events $i$, as well as the value of the event weight. Therefore, the weights will balance out this difference in the computation of the loss in the presence of unbalanced signal and background event numbers. For instance, by using this formula, the class weights are:
+Eq.(\ref{Eq:class weights}) takes into account the number of events in the sample, as we are summing over all the events $i$, as well as the value of the event weight. The sum is also running on $j$, being the number of \Ht bins for the QCD background. Therefore, the effective number of events for each class is used in the weights to balance out this difference in the computation of the loss. For instance, by using this formula, the class weights are:
 \begin{itemize}
     \item $\text{Class weight for signal per event} \sim 2.452 \times 10^{-4}$
     \item $\text{Class weight for 4b-QCD background per event} \sim 1.999$
@@ -154,7 +157,7 @@ As shown by comparing values discussed in the previous Sections, when multiplyin
 
 \subsection{Input features}
 
-As sequential input variables for the SPANet training, the 4-vector of the 5 jets with leading b-tag (variables defined in Section \ref{subsection: kinematic vars}) is given to the network. Afterwards, different configurations will be tested with the global variables. Firstly, as global inputs the variables used in the DNN used for Run 3 (cite) are given to SPANet:
+As sequential input variables for the SPANet training, the 4-vector of the 5 jets with leading b-tag (variables defined in Section \ref{subsection: kinematic vars}) is given to the network. Afterwards, different configurations will be tested with the global variables. Firstly, as global inputs the variables used in the DNN used for Run 3 \cite{ANRun3} are given to SPANet:
 
 \begin{itemize}
     \item $\Delta R$ maximum between jets
@@ -171,10 +174,14 @@ As sequential input variables for the SPANet training, the 4-vector of the 5 jet
 
 In addition to the DNN variables presented before, it is proposed to give as global input a variable that we will refer to as {Probability Difference variable} (PD). It is defined as the difference between the best and second-best pairings predicted by SPANet.
 
-When a SPANet model is evaluated on a signal event the best pairing will have a very high probability (close to 1) since there is one true pairing. The second-best pairing will have a very small probability and the difference between these two will be a high value. On the contrary, for the background, the best and second best probabilities will both most likely have a probability of around 0.5 as this choice of the pairing is random because there is no true pairing in the background case. The difference of these two will have a very small value. This variable has a large discriminating power that is very useful when using SPANet as S/B classifier.
+When a SPANet model is evaluated on a signal event, as observed in Figure \ref{fig: prob value}, the best pairing will have a very high probability (close to 1) since there is one true pairing. The second-best pairing will have a very small probability and the difference between these two will be a high value. On the contrary, for the background, as in Figure \ref{fig: prob value}, the best and second best probabilities will both most likely have values of around 0.5 as this choice of the pairing is random because there is no true pairing in the background case. The difference of these two will have a very small value. This variable has a large discriminating power that is very useful when using SPANet as S/B classifier.
 
-\
-
+\begin{figure}
+    \centering
+    \includegraphics[width=0.7\linewidth]{Images/7.S:B/Prob diff/best_and_second_beest_pairings.pdf}
+    \caption{Pairing probability distribution of the best and second-best pairings for signal and background events given by SPANet.}
+    \label{fig: prob value}
+\end{figure}
 
 After evaluating a SPANet model on the test file, we obtain as output the pairing with the highest probability, i.e SPANet gives as output the pair of jets with the highest probability to be matched to the generator-level quarks coming from the decay of the leading and the sub-leading Higgs. This result is used in Section \ref{section: improving}. It is also possible to have as output the full matrix with all the pairing probabilities of the jets for the leading and the sub-leading Higgs, as illustrated in Figure \ref{fig: probabilities matrix}.
 
@@ -231,7 +238,7 @@ Finally, as a figure of merit to assess the discriminating power of the PD varia
 
 As mentioned earlier, it would be optimal to use 4b morphed data for the SPANet training. Nevertheless, as this is not possible yet, the 4b data performance will be assessed differently using three different configurations presented later in the text. These configurations are given by either using 4b QCD, 2b QCD, or 2b data, defined in Section \ref{subsubsecxtion: 4/2 b regions} as background samples. We will refer to each configuration in the following by the name of the sample used for the background in the training. For each configuration, we will be comparing the training using only DNN variables as inputs or DNN and PD variables.
 
-In order to have a meaningful comparison to the performance of the DNN used in Run 3 presented in the AN (cite) where the 4b morphed data is used for the training, the results of the SPANet training will be inferred in the 4b data. To do so, we will infer the value of the area under the curve (AUC) by using the following expression:
+In order to have a meaningful comparison to the performance of the DNN used in Run 3 presented in the AN \cite{ANRun3} where the 4b morphed data is used for the training, the results of the SPANet training will be inferred in the 4b data. To do so, we will infer the value of the area under the curve (AUC) by using the following expression:
 
 \begin{equation}
     \text{AUC}(\text{4b-data})= \text{AUC}(\text{2b-data}_f) \times {\frac{\text{AUC}(\text{4b-QCD})}{\text{AUC}(\text{2b-QCD}_r)}} \times {\frac{\text{AUC}(\text{2b-QCD}_r)}{\text{AUC}(\text{2b-data}_r)}}

@@ -39,7 +39,9 @@
 \hypersetup{
     colorlinks=true,
     linkcolor= Cerulean ,
+    citecolor= SpringGreen,
 }
+
 
 
 \setcounter{secnumdepth}{4}
@@ -50,6 +52,29 @@
 {0pt}{3.25ex plus 1ex minus .2ex}{1.5ex plus .2ex}
 
 \input{particle_def}
+\renewbibmacro{in:}{}
+\renewbibmacro*{journal+issuetitle}{%
+  \iffieldundef{journal}%
+    {}% Do nothing if the journal is undefined
+    {\printtext[journal]{%
+      \printfield{journaltitle}}}%
+  \newunit}
+
+\renewbibmacro*{title}{%
+  \ifboolexpr{
+    test {\ifentrytype{book}}
+    or
+    test {\ifentrytype{mvbook}}
+    or
+    test {\ifentrytype{inbook}}
+    or
+    test {\ifentrytype{bookinbook}}
+    or
+    test {\ifentrytype{suppbook}}
+  }
+  {"\printfield[title]{title}"}  % Enclose title in double quotes
+  {\printfield[title]{title}}  % Default for other types
+}
 
 
 \begin{document}
@@ -73,7 +98,7 @@
 \end{figure}
 \center
 \HRule \\[0.4cm]
-{ \huge \bfseries  Improving the reconstructed 4b signal final state pairing efficiency to Higgs boson candidate in the HH to 4b analysis at CMS
+{ \huge \bfseries  Improving the reconstructed 4b signal final state pairing efficiency to Higgs boson candidate in the HH $\to$ 4b Run 3 analysis at CMS
  \\[0.15cm] }
  \HRule \\[0.5cm]
  \center 
@@ -87,7 +112,7 @@ M2 High Energy Physics
 \\[1cm]
 \textbf{Abstract}\\[1cm]
 \justifying
-The Higgs boson is the last building block of the Standard Model (SM) of particle physics. Its discovery in 2012 by the ATLAS \cite{ATLASdecouvhiggs} and CMS \cite{CMShiggsdecouv} experiments represents a major breakthrough in particle physics as it proves the existence of a scalar field, with which the particles in the SM interact to gain their mass. Nevertheless,  there is an ongoing experimental effort to further probe the properties of the Higgs boson, for instance, the self-coupling constant $\lambda$. This can be probed in di-Higgs (HH) production. In this thesis, the use of SPANet \cite{SPANet}, an attention-based neural network is proposed for the HH $\to$ 4b analysis. 
+The Higgs boson is the last building block of the Standard Model (SM) of particle physics. Its discovery in 2012 by the ATLAS \cite{ATLASdecouvhiggs} and CMS \cite{CMShiggsdecouv} experiments represents a major breakthrough in particle physics as it proves the existence of a scalar field, with which the particles in the SM interact to gain their mass. Nevertheless,  there is an ongoing experimental effort to further probe the properties of the Higgs boson, for instance, the self-coupling constant $\lambda$. This can be probed in di-Higgs (HH) production. In this thesis, the use of SPANet \cite{SPANet}, an attention-based neural network for jet paring and classification for signal extraction is proposed for the HH $\to$ 4b analysis. 
 
 \end{titlepage}
 
@@ -120,12 +145,20 @@ The Higgs boson is the last building block of the Standard Model (SM) of particl
 
 \include{Chapters/Conclusion}
 
-\section*{Acknowledgements}
+\section{Acknowledgements}
 
-%My basketball buddy
+This thesis would not have been possible without Matteo Malucchi, my basketball buddy and my best friend. Without you, I would not have been able to do this work, let alone finish it. I am beyond thankful to have had the chance to work with you, not only because you are an amazing teacher with incredible patience, but also because it is impossible to not have fun with you. Thank you for the best six months, full of knowledge and happiness. And don't you worry, I might be transferring to the Stamford branch, but I'll be back in Scranton before you know it. \textcolor{white}{This real-life version of Jim and Pam cannot be away from each other for that long.}
+
+I would also like to express my deep gratitude to Alessandro Calandri, for his patience and guidance throughout these months. I am extremely grateful for this opportunity you gave me and everything I learned under your supervision in these past months, although I still have a lot to learn! I also wanted to express my gratitude to Mauro Donegà, for giving me this opportunity that has been of great help to me. I am deeply thankful to the ETH CMS group that has welcomed me with open arms since the first day. You are all wonderful people, and I wish you all the best. In particular, I would like to thank Giorgia Bonomelli and Sophie Rohletter for their support and motivation, you truly are amazing friends.
+
+Finally, I would like to express my gratitude to my family. Théo et Inès, sans vous je serais certainement perdue. Je ne pourrai jamais assez vous remercier pour tout votre soutien pendant ces mois. Vraiment, quelle chance de pouvoir vous appeler ma famille. Y por último y más importante, Mama y Papa, nunca podré agradeceros suficientemente todo el apoyo que me dais. Sin vosotros nunca hubiese podido venir aquí, ni dado tantas vueltas por el mundo. Os echo de menos todos los días pero, por más lejos que estemos, siempre os siento cerca. 
+
+
 
 % \bibliography{bibliography}
 % \bibliographystyle{plain}
+
+\newpage
 
 \printbibliography
 

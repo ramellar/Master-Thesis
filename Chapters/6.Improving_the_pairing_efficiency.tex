@@ -95,7 +95,7 @@ Table \ref{table: First comparison} summarizes these results by showing the conf
 
 As previously explained, the global variables only add event-level information, therefore in the training using 4 jets 5 global, the fifth jet adds information on the kinematics of the system but is not used for the pairing.
 
-In order to compare the trainings presented in Table \ref{table: First comparison}, the total pairing efficiency is used as a figure of merit since it takes into consideration the fraction of fully matched events.
+In order to compare the trainings presented in Table \ref{table: First comparison}, the total pairing efficiency is used as a figure of merit since it takes into consideration the fraction of fully matched events. In Table \ref{table: First comparison}, the values do not have uncertainties. Nevertheless, the largest source of uncertainty is discussed in Section \ref{subsection: pairing variability}.
 We conclude that using the training configurations described in Table \ref{table: First comparison}; using 4 jets and 5$^{\text{th}}$ global or 4 jets as inputs results in a better pairing performance. Nevertheless, by considering a 5$^{\text{th}}$ jet as either a global input or for the pairing can help the reconstruction performance by the SPANet network since it provides additional information about the event. Therefore, in Section \ref{subsubsection: input features and results} different configurations using 4 jets with a 5$^{\text{th}}$ global and 5 jets as inputs. In the new configurations we either vary the kinematical information of the jets or some of the hyperparameters of the model. 
 
 \newpage
@@ -627,7 +627,7 @@ Figure \ref{fig: loose vd tight} shows the total pairing efficiency as a functio
 \begin{figure}[hbt]
     \centering
     \includegraphics[width=0.6\linewidth]{Images/6.Improving/kappa lambda/loose vs tight.png}
-    \caption{Comparison of trainings using Loose or Tight cuts presented in Table \ref{table:kl loose vs tight}). These trainings are compared to the $D_{HH}$-method used in Run 2.}
+    \caption{Comparison of trainings using Loose or Tight cuts presented in Table \ref{table:kl loose vs tight}. These trainings are compared to the $D_{HH}$-method used in Run 2.}
     \label{fig: loose vd tight}
 \end{figure}
 
@@ -647,20 +647,28 @@ Figure \ref{fig: loose vd tight} shows the total pairing efficiency as a functio
 
 \newpage
 
-\subsection{The final configuration} \label{subsection: Optimal config}
+\subsection{Summary on the best performing configuration} \label{subsection: Optimal config}
 After comparing several configurations, we conclude that the best performance for jet pairing is given by the SPANet - \kl - Tight selection model that uses:
 \begin{itemize}
     \item \pt regressed, $\eta$, $\phi$ and b-tag of the 5 jets considered for the pairing as sequential inputs
     \item No explicit \kl input as a global variable
     \item Stable model hyperparameters (shown in Table \ref{table: stable model})
 \end{itemize}
-Figure \ref{fig: 2D mass dist kl} shows the 2D mass sculpting of the background. We do not observe any excess of events (background sculpting) in the SR.
+Figure \ref{fig: 2D mass dist kl} shows the 2D mass sculpting of the background. The distribution of the leading and subleading Higgs masses of the SPANet - \kl - Tight selection model is shown in Figures \ref{fig: leading H mass dist} and \ref{fig: subleading H mass dist}. We do not observe any excess of events (background sculpting) in the SR. Finally, it is possible to compare Figure \ref{fig: 2D mass dist kl} to Figure \ref{fig: AN 2d dist}, the 2D mass sculpting of the background using the $D_{HH}$-method on the total background. The usage of the $D_{HH}$-method does not show any sculpting in the SR.
 
-\begin{figure}
+
+\begin{figure}[hbt]
     \centering
     \includegraphics[width=0.6\linewidth]{Images/6.Improving/kappa lambda/mass dist best model.png}
     \caption{Higgs mass distribution of the leading Higgs and the subleading Higgs after the evaluation of  SPANet - \kl - Tight selection model on 2b data. The vertical black line corresponds to the mass of the leading Higgs and the horizontal of the subleading Higgs. The black circle defines the SR area defined in Section \ref{section: HH4b}.}
     \label{fig: 2D mass dist kl}
+\end{figure}
+
+\begin{figure}[hbt]
+    \centering
+    \includegraphics[width=0.5\linewidth]{Images/6.Improving/Run 3 result.png}
+    \caption{Higgs mass distribution of the leading Higgs and the subleading Higgs after the evaluation of the $D_{HH}$-method on the total background, along with the main QCD process, the $t\Bar{t}$ background has also been included. \cite{ANRun3}}
+    \label{fig: AN 2d dist}
 \end{figure}
 
 % jets as inputs, pt regressed, lite and stable model, tight cuts, no kl as inout explicitely

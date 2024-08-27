@@ -2,7 +2,7 @@
 
 \subsection{Theoretical aspects of the HH $\to$ 4b search}
 
-As mentioned in Section \ref{intro}, the Brout–Englert–Higgs mechanism is introduced to generate the masses of vector bosons without breaking the gauge invariance explicitly \cite{Higgs64}. This mechanism introduces the Higgs field $H$, a real scalar field with which massive particles interact to acquire mass. The Higgs boson is an excitation of this field. The discovery of a Higgs boson by the ATLAS \cite{ATLASdecouvhiggs} and CMS\cite{CMShiggsdecouv} experiments proves the existence of a scalar field. Nevertheless, to further probe this mechanism, the shape of the Higgs potential postulated by the Higgs mechanism needs to be verified. As shown in Eq.(\ref{eq:Higgs potential}), the shape of this potential is governed by the parameters $\lambda$ and $\mu^2$.
+As mentioned in Section \ref{intro}, the Brout–Englert–Higgs mechanism is introduced to generate the masses of vector bosons without breaking the gauge invariance explicitly \cite{Higgs64}. This mechanism introduces the Higgs field $H$, a real scalar field with which massive particles interact to acquire mass. The Higgs boson is an excitation of this field. The discovery of a Higgs boson by the ATLAS \cite{ATLASdecouvhiggs} and CMS \cite{CMShiggsdecouv} experiments proves the existence of a scalar field. Nevertheless, to further probe this mechanism, the shape of the Higgs potential postulated by the Higgs mechanism needs to be verified. As shown in Eq.(\ref{eq:Higgs potential}), the shape of this potential is governed by the parameters $\lambda$ and $\mu^2$.
 
 \begin{equation}
     V(\Phi^\dag \Phi)=-\mu^2 \Phi^\dag \Phi + \lambda (\Phi^\dag \Phi)^2
@@ -40,8 +40,8 @@ In the following sections, the focus will be only on the direct measurements of 
 
 \noindent The dominant HH production modes in the SM are \cite{ANRun2}:
 \begin{itemize}
-    \item Gluon-gluon fusion (ggF) with a production cross section $\sigma^{\text{ggF}}_{\text{HH}}=31.1^{+2.1\%}_{-7.2\%}$ fb at $\sqrt{s}=13$TeV. Figure \ref{fig: GGF f} shows the Feynamn diagram of this process.
-    \item Vector-boson fusion (VBF) with a production cross section $\sigma^{\text{VBF}}_{\text{HH}}= 1.726 \pm 0.036$ fb at $\sqrt{s}=13$TeV. Figure \ref{fig: VF f} shows the Feynamn diagram of this process.
+    \item Gluon-gluon fusion (ggF) with a production cross section $\sigma^{\text{ggF}}_{\text{HH}}=31.1^{+2.1\%}_{-7.2\%}$ fb at $\sqrt{s}=13$TeV \cite{Run2res}. Figure \ref{fig: GGF f} shows the Feynamn diagram of this process.
+    \item Vector-boson fusion (VBF) with a production cross section $\sigma^{\text{VBF}}_{\text{HH}}= 1.726 \pm 0.036$ fb at $\sqrt{s}=13$TeV \cite{Run2res}. Figure \ref{fig: VF f} shows the Feynamn diagram of this process.
 \end{itemize}
 
 \begin{figure}[hbt]
@@ -146,7 +146,7 @@ Although with the official datasets it is possible to use samples with \kl $\in 
     \label{fig: eta h1 for validation}
 \end{figure}
 
-The main background HH $\to$ 4b analysis is represented by QCD multijet processes (Figure \ref{fig: QCD multijet}). This background is simulated using by \verb|MADGRAPH5_aMC@NLO| at leading order accuracy (LO) in the coupling constant $\alpha_s$. The QCD multijet background is produced in \Ht bins, Table \ref{table: QCD  multijet} reports the different \Ht bins and the corresponding cross-sections (cite AN Run3?).
+The main background HH $\to$ 4b analysis is represented by QCD multijet processes (Figure \ref{fig: QCD multijet}). This background is simulated using by \verb|MADGRAPH5_aMC@NLO| at leading order accuracy (LO) in the coupling constant $\alpha_s$ \cite{ANRun3}. The QCD multijet background is produced in \Ht bins, Table \ref{table: QCD  multijet} reports the different \Ht bins and the corresponding cross-sections \cite{ANRun3}.
 
 \begin{figure}[hbt]
     \centering
@@ -435,6 +435,6 @@ As an alternative to the $D_{HH}$-method for jet pairing, SPANet (discussed in S
 
 \subsection{Algorithm for jet classification in HH $\to$ 4b analysis} \label{subsection: DNN}
 
-For the Run 3 analysis, a multivariate event classifier is used to discriminate the HH $\to$ 4b signal against the QCD multijet background. The background model used for the training of the classifier is discussed in Section \ref{subsection: bckg estimation}. (cite Run 3 AN?)
+For the Run 3 analysis, a multivariate event classifier is used to discriminate the HH $\to$ 4b signal against the QCD multijet background. The background model used for the training of the classifier is discussed in Section \ref{subsection: bckg estimation} \cite{ANRun3}. 
 
 As an alternative to this DNN for the classification, the use of SPANet (discussed in Section \ref{section: spanet architecture}), an attention-based neural network is proposed and will be compared to the standard DNN in Section \ref{section: s/b classification}.
